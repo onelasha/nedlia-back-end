@@ -1,3 +1,8 @@
+"""
+This module provides a simple greeting function.
+"""
+
+
 def add(a, b):
     """
     Simple function to add two numbers.

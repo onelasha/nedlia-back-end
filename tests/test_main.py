@@ -1,4 +1,7 @@
-import pytest
+"""
+This module provides a simple greeting function.
+"""
+
 from main import add
 
 
