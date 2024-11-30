@@ -2,8 +2,6 @@
 This module provides a simple greeting function.
 """
 
-# import pytest
-
 from main import add
 
 

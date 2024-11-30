@@ -11,6 +11,14 @@ repos:
     - id: debug-statements
     - id: requirements-txt-fixer
 
+
+- repo: https://github.com/antonbabenko/pre-commit-terraform
+  rev: v1.78.0
+  hooks:
+    - id: terraform_fmt
+    - id: terraform_validate
+
+
 - repo: local
   hooks:
     - id: isort
