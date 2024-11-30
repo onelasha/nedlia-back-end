@@ -1,9 +1,16 @@
+"""Unit tests for version number validation functionality."""
+import re
 import unittest
 from main import regex
-import re
+
 
 class TestVersionValidation(unittest.TestCase):
+    """Test suite for version number validation.
+
+    Tests version strings against minimum version requirements.
+    """
     def test_valid_versions(self):
+        """Test that valid version numbers are correctly identified."""
         valid_versions = [
             "1.14.56",    # Minimum valid version
             "1.14.57",
@@ -25,6 +32,7 @@ class TestVersionValidation(unittest.TestCase):
                 )
 
     def test_invalid_versions(self):
+        """Test that invalid version numbers are correctly rejected."""
         invalid_versions = [
             "1.14.55",    # Too old
             "1.14.0",
