@@ -62,7 +62,8 @@ def run_server(port: int = 8000, *, loop=None):
         if server_task:
             try:
                 loop.run_until_complete(server_task)
-            except:
+            except (asyncio.CancelledError, RuntimeError):
+                # Handle cancellation and runtime errors during shutdown
                 pass
         if loop is not None and loop.is_running():
             loop.stop()
