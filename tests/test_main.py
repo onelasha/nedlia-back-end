@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
-from main import doSomething, hello_world, app, start_server
+from main import doSomething, hello_world, app, start_server, run_server
 import io
 import sys
 import asyncio
@@ -112,3 +112,34 @@ async def test_start_server():
                 await server_task
             except asyncio.CancelledError:
                 pass
+
+@pytest.mark.asyncio(loop_scope="function")
+async def test_run_server():
+    # Create a future to run the server
+    loop = asyncio.get_event_loop()
+    server_future = loop.create_future()
+    
+    def mock_run_until_complete(coro):
+        async def mock_start_server(port=8000):
+            return asyncio.Event(), asyncio.create_task(asyncio.sleep(0))
+        if asyncio.iscoroutine(coro):
+            return loop.run_until_complete(mock_start_server())
+        return coro
+    
+    # Mock the event loop
+    loop.run_until_complete = mock_run_until_complete
+    
+    # Run the server in a separate task
+    server_task = asyncio.create_task(
+        asyncio.to_thread(run_server, port=8000)
+    )
+    
+    # Give it a moment to start
+    await asyncio.sleep(0.1)
+    
+    # Cancel the task
+    server_task.cancel()
+    try:
+        await server_task
+    except asyncio.CancelledError:
+        pass  # Expected
