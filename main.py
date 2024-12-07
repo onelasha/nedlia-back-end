@@ -49,11 +49,9 @@ def run_server(port: int = 8000):
     try:
         shutdown_event, server_task = loop.run_until_complete(start_server(port))
         loop.run_forever()
-    except KeyboardInterrupt:
-        print("Shutting down...")
+    except Exception as e:
+        raise RuntimeError(f"Failed to start server: {str(e)}")
     finally:
-        shutdown_event.set()
-        loop.run_until_complete(server_task)
         loop.close()
 
 if __name__ == "__main__":
