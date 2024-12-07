@@ -4,6 +4,7 @@ from hypercorn.asyncio import serve
 import asyncio
 import uvloop
 from contextlib import asynccontextmanager
+import signal
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -28,21 +29,32 @@ async def hello():
 async def start_server(port: int = 8000):
     config = Config()
     config.bind = [f"127.0.0.1:{port}"]
-    config.use_reloader = True
+    config.use_reloader = False  # Disable reloader for testing
     config.worker_class = "uvloop"
     config.accesslog = "-"
     
     shutdown_event = asyncio.Event()
-    await serve(app, config, shutdown_trigger=shutdown_event.wait)
-    return shutdown_event
+    
+    server_task = asyncio.create_task(
+        serve(app, config, shutdown_trigger=shutdown_event.wait),
+        name=f"server-{port}"
+    )
+    
+    # Return both the shutdown event and task for better control
+    return shutdown_event, server_task
 
 def run_server(port: int = 8000):
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
-        loop.run_until_complete(start_server(port))
+        shutdown_event, server_task = loop.run_until_complete(start_server(port))
+        loop.run_forever()
+    except KeyboardInterrupt:
+        print("Shutting down...")
     finally:
+        shutdown_event.set()
+        loop.run_until_complete(server_task)
         loop.close()
 
 if __name__ == "__main__":
