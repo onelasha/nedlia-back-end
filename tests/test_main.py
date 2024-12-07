@@ -63,15 +63,18 @@ async def test_lifespan():
 
 @pytest.mark.asyncio(loop_scope="function")
 async def test_start_server():
+    # Use a test port
+    test_port = 8999
+    
     # Start the server
-    shutdown_event = await start_server()
+    shutdown_event = await start_server(port=test_port)
     
     try:
         # Give the server a moment to start
         await asyncio.sleep(0.1)
         
         # Make a test request
-        async with AsyncClient(base_url="http://localhost:80") as client:
+        async with AsyncClient(base_url=f"http://127.0.0.1:{test_port}") as client:
             try:
                 response = await client.get("/hello")
                 assert response.status_code == 200
