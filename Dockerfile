@@ -6,8 +6,11 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application
-COPY . .
+# Copy only necessary application files
+COPY main.py .
+COPY sonar-project.properties .
+COPY pytest.ini .
+COPY README.md .
 
 # Use non-root user for security
 RUN useradd -m myuser
