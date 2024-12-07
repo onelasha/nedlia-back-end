@@ -4,10 +4,9 @@ from hypercorn.asyncio import serve
 import asyncio
 import uvloop
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+async def lifespan(app: FastAPI):
     # Startup
     print("Starting up...")
     yield
@@ -31,9 +30,20 @@ async def start_server():
     config.bind = ["0.0.0.0:80"]
     config.use_reloader = True
     config.worker_class = "uvloop"
-    config.accesslog = "-"    
-    await serve(app, config)
+    config.accesslog = "-"
+    
+    shutdown_event = asyncio.Event()
+    await serve(app, config, shutdown_trigger=shutdown_event.wait)
+    return shutdown_event
+
+def run_server():
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(start_server())
+    finally:
+        loop.close()
 
 if __name__ == "__main__":
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    asyncio.run(start_server())
+    run_server()
