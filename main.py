@@ -4,7 +4,6 @@ from hypercorn.asyncio import serve
 import asyncio
 import uvloop
 from contextlib import asynccontextmanager
-import signal
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

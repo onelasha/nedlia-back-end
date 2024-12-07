@@ -5,8 +5,6 @@ from main import doSomething, hello_world, app, start_server, run_server
 import io
 import sys
 import asyncio
-import signal
-from contextlib import asynccontextmanager
 import socket
 from contextlib import closing
 
