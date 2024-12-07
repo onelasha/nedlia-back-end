@@ -61,27 +61,15 @@ async def test_lifespan():
     assert "Starting up..." in output
     assert "Shutting down..." in output
 
-@asynccontextmanager
-async def server_context():
-    # Create a task for the server with proper naming
-    server_task = asyncio.create_task(start_server(), name="test_server")
+@pytest.mark.asyncio(loop_scope="function")
+async def test_start_server():
+    # Start the server
+    shutdown_event = await start_server()
+    
     try:
         # Give the server a moment to start
         await asyncio.sleep(0.1)
-        yield server_task
-    finally:
-        # Ensure proper cleanup
-        server_task.cancel()
-        try:
-            await server_task
-        except asyncio.CancelledError:
-            if not server_task.cancelled():
-                raise
-
-@pytest.mark.asyncio(loop_scope="function")
-async def test_start_server():
-    # Use structured concurrency with context manager
-    async with server_context() as server_task:
+        
         # Make a test request
         async with AsyncClient(base_url="http://localhost:80") as client:
             try:
@@ -90,3 +78,8 @@ async def test_start_server():
             except:
                 # If we can't connect, that's fine - we just want to test the server starts
                 pass
+    finally:
+        # Trigger shutdown
+        shutdown_event.set()
+        # Give it a moment to shut down
+        await asyncio.sleep(0.1)
