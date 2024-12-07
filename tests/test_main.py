@@ -1,12 +1,10 @@
 import pytest
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
-from main import doSomething, hello_world, app, start_server
+from main import doSomething, hello_world, app, start_server, run_server
 import io
 import sys
 import asyncio
-import signal
-from contextlib import asynccontextmanager
 import socket
 from contextlib import closing
 
@@ -112,3 +110,76 @@ async def test_start_server():
                 await server_task
             except asyncio.CancelledError:
                 pass
+
+@pytest.mark.asyncio
+async def test_run_server():
+    # Create a mock event loop
+    class MockEventLoop:
+        def __init__(self):
+            self.closed = False
+            self.is_running_flag = False
+            
+        def run_until_complete(self, coro):
+            return (asyncio.Event(), asyncio.create_task(asyncio.sleep(0)))
+            
+        def run_forever(self):
+            self.is_running_flag = True
+            
+        def close(self):
+            self.closed = True
+            
+        def is_running(self):
+            return self.is_running_flag
+            
+        def stop(self):
+            self.is_running_flag = False
+    
+    # Create our mock loop
+    mock_loop = MockEventLoop()
+    
+    try:
+        # Run the server with our mock loop
+        test_port = find_free_port()
+        run_server(port=test_port, loop=mock_loop)
+        
+        # Verify the loop was properly used
+        assert mock_loop.closed, "Loop should be closed after server run"
+        
+    except Exception as e:
+        pytest.fail(f"Test failed: {str(e)}")
+
+@pytest.mark.asyncio
+async def test_run_server_error_handling():
+    # Create a mock event loop that raises an error
+    class MockEventLoop:
+        def __init__(self):
+            self.closed = False
+            self.is_running_flag = False
+            
+        def run_until_complete(self, coro):
+            raise RuntimeError("Mock error")
+            
+        def run_forever(self):
+            self.is_running_flag = True
+            
+        def close(self):
+            self.closed = True
+            
+        def is_running(self):
+            return self.is_running_flag
+            
+        def stop(self):
+            self.is_running_flag = False
+    
+    # Create our mock loop
+    mock_loop = MockEventLoop()
+    
+    # Run the server with our mock loop and expect an error
+    test_port = find_free_port()
+    with pytest.raises(RuntimeError) as exc_info:
+        run_server(port=test_port, loop=mock_loop)
+    
+    # Verify the error message
+    assert "Failed to start server: Mock error" in str(exc_info.value)
+    # Verify the loop was properly closed
+    assert mock_loop.closed, "Loop should be closed even after error"
