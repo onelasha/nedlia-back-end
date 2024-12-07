@@ -7,6 +7,15 @@ import sys
 import asyncio
 import signal
 from contextlib import asynccontextmanager
+import socket
+from contextlib import closing
+
+def find_free_port():
+    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+        s.bind(('', 0))
+        s.listen(1)
+        port = s.getsockname()[1]
+        return port
 
 def test_do_something(test_client: TestClient):
     # Capture stdout
@@ -63,26 +72,43 @@ async def test_lifespan():
 
 @pytest.mark.asyncio(loop_scope="function")
 async def test_start_server():
-    # Use a test port
-    test_port = 8999
+    # Find a free port
+    test_port = find_free_port()
     
-    # Start the server
-    shutdown_event = await start_server(port=test_port)
+    # Start the server with a timeout
+    try:
+        shutdown_event, server_task = await asyncio.wait_for(
+            start_server(port=test_port),
+            timeout=5.0
+        )
+    except asyncio.TimeoutError:
+        pytest.fail("Server startup timed out")
+        return
     
     try:
         # Give the server a moment to start
         await asyncio.sleep(0.1)
         
-        # Make a test request
+        # Make a test request with timeout
         async with AsyncClient(base_url=f"http://127.0.0.1:{test_port}") as client:
             try:
-                response = await client.get("/hello")
+                response = await asyncio.wait_for(
+                    client.get("/hello"),
+                    timeout=2.0
+                )
                 assert response.status_code == 200
-            except:
-                # If we can't connect, that's fine - we just want to test the server starts
-                pass
+            except asyncio.TimeoutError:
+                pytest.fail("Request timed out")
+            except Exception as e:
+                pytest.fail(f"Request failed: {str(e)}")
     finally:
-        # Trigger shutdown
+        # Cleanup with timeout
         shutdown_event.set()
-        # Give it a moment to shut down
-        await asyncio.sleep(0.1)
+        try:
+            await asyncio.wait_for(server_task, timeout=2.0)
+        except asyncio.TimeoutError:
+            server_task.cancel()
+            try:
+                await server_task
+            except asyncio.CancelledError:
+                pass
