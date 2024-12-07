@@ -42,16 +42,30 @@ async def start_server(port: int = 8000):
     # Return both the shutdown event and task for better control
     return shutdown_event, server_task
 
-def run_server(port: int = 8000):
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+def run_server(port: int = 8000, *, loop=None):
+    if loop is None:
+        asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    
+    shutdown_event = None
+    server_task = None
+    
     try:
         shutdown_event, server_task = loop.run_until_complete(start_server(port))
         loop.run_forever()
     except Exception as e:
         raise RuntimeError(f"Failed to start server: {str(e)}")
     finally:
+        if shutdown_event:
+            shutdown_event.set()
+        if server_task:
+            try:
+                loop.run_until_complete(server_task)
+            except:
+                pass
+        if loop is not None and loop.is_running():
+            loop.stop()
         loop.close()
 
 if __name__ == "__main__":
