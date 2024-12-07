@@ -17,7 +17,7 @@ RUN useradd -m myuser
 USER myuser
 
 # Expose the port
-EXPOSE 8080
+EXPOSE 8000
 
 # Command to run the application
-CMD ["hypercorn", "main:app", "--bind", "0.0.0.0:8080", "--workers", "4", "--access-logfile", "-", "--worker-class", "uvloop"]
+CMD ["hypercorn", "main:app", "--bind", "0.0.0.0:8000", "--workers", "4", "--access-logfile", "-", "--worker-class", "uvloop"]
