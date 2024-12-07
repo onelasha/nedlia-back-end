@@ -25,9 +25,9 @@ def hello_world() -> None:
 async def hello():
     return {"message": "Hello World"}
 
-async def start_server():
+async def start_server(port: int = 8000):
     config = Config()
-    config.bind = ["0.0.0.0:80"]
+    config.bind = [f"127.0.0.1:{port}"]
     config.use_reloader = True
     config.worker_class = "uvloop"
     config.accesslog = "-"
@@ -36,12 +36,12 @@ async def start_server():
     await serve(app, config, shutdown_trigger=shutdown_event.wait)
     return shutdown_event
 
-def run_server():
+def run_server(port: int = 8000):
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
-        loop.run_until_complete(start_server())
+        loop.run_until_complete(start_server(port))
     finally:
         loop.close()
 
