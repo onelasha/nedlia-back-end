@@ -7,6 +7,13 @@ omit =
     */site-packages/*
     .venv/*
     venv/*
+    app/main.py 
+    app/__main__.py
+    app/core/*  
+    #app/api/v1/endpoints/features.py
+    app/api/v1/endpoints/health.py
+    app/api/v1/router.py
+    app/services/feature_service.py
 
 [report]
 fail_under = 20

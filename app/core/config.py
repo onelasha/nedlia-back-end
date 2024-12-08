@@ -3,7 +3,7 @@ Core configuration for the application.
 """
 from enum import Enum
 from functools import lru_cache
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Environment(str, Enum):
     """Application environments"""
@@ -45,10 +45,11 @@ class Settings(BaseSettings):
         """Check if running in production environment"""
         return self.ENVIRONMENT == Environment.PRODUCTION
     
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
-        use_enum_values = True
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=True,
+        use_enum_values=True
+    )
 
 @lru_cache()
 def get_settings() -> Settings:
