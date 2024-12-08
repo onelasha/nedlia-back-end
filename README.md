@@ -55,27 +55,3 @@ curl http://localhost:8000/v1/health
 # Check feature flags
 curl http://localhost:8000/v1/features/status/sample-feature-state
 ```
-
-5. Running Tests:
-```commandline
-# Install test dependencies
-pip install -r requirements/test.txt
-
-# Run all tests
-pytest
-
-# Run tests with coverage report
-pytest --cov=app
-
-# Run tests verbosely (shows more details)
-pytest -v
-
-# Run a specific test file
-pytest tests/test_main.py
-
-# Run tests and generate HTML coverage report
-pytest --cov=app --cov-report=html
-```
-
-After running tests with coverage, you can find the HTML report in the `htmlcov` directory.
-Open `htmlcov/index.html` in your browser to view the detailed coverage report.
