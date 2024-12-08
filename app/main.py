@@ -2,7 +2,6 @@
 Main application entry point.
 """
 import asyncio
-import uvloop
 from fastapi import FastAPI
 from hypercorn.config import Config
 from hypercorn.asyncio import serve
@@ -26,7 +25,6 @@ async def start_server(port: int = 8000):
     config = Config()
     config.bind = [f"127.0.0.1:{port}"]
     config.use_reloader = False
-    config.worker_class = "uvloop"
     config.accesslog = "-"
     
     shutdown_event = asyncio.Event()
@@ -41,7 +39,6 @@ async def start_server(port: int = 8000):
 def run_server(port: int = 8000, *, loop=None):
     """Run the server."""
     if loop is None:
-        asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
     
