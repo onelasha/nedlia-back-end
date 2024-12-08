@@ -32,14 +32,14 @@ jobs:
           echo "DEBUG=False" >> .env
           echo "ENVIRONMENT=testing" >> .env
           echo "HOST=127.0.0.1" >> .env
-          echo "PORT=8000" >> .env
+          echo "PORT=8080" >> .env
           echo "GROWTHBOOK_API_HOST=${{ secrets.GROWTHBOOK_API_HOST }}" >> .env
           echo "GROWTHBOOK_CLIENT_KEY=${{ secrets.GROWTHBOOK_CLIENT_KEY_PROD }}" >> .env
           echo "GROWTHBOOK_CACHE_TTL=60" >> .env
 
       - name: Run tests with coverage
         env:
-          GROWTHBOOK_CLIENT_KEY: ${{ secrets.GROWTHBOOK_CLIENT_KEY }}
+          GROWTHBOOK_CLIENT_KEY: ${{ secrets.GROWTHBOOK_CLIENT_KEY_PROD }}
         run: |
           poetry run pytest --cov=. --cov-report=xml --cov-report=term-missing tests/
     
