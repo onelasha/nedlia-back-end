@@ -1,5 +1,0 @@
-fastapi
-hypercorn
-uvloop
-growthbook
-pydantic-settings
