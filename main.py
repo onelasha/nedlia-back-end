@@ -1,12 +1,18 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from hypercorn.config import Config
 from hypercorn.asyncio import serve
-import asyncio
 import uvloop
-from contextlib import asynccontextmanager
+import asyncio
+from config import get_settings
+from growthbook import GrowthBook
+
+
+settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """Lifespan event handler for FastAPI application"""
     # Startup
     print("Starting up...")
     yield
@@ -15,15 +21,49 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+def on_experiment_viewed(experiment, result):
+    # TODO: Use your real analytics tracking system
+    print("Viewed Experiment")
+    print("Experiment Id: " + experiment.key)
+    print("Variation Id: " + result.key)
+
+gb = GrowthBook(
+  api_host = "https://cdn.growthbook.io",
+  client_key = "sdk-SCaXzbrHAk1uwpbE",
+  cache_ttl = 60
+)
+gb.load_features()
+
+@app.post("/update_grouthbook")
+async def update_grouthbook():
+    gb.load_features()
+    print("Feature flags are updated....")
+    return {"Ok"}
+
+@app.get("/")
+async def root():
+    # gb.load_features()
+    """Root endpoint"""
+    feature = "No Enabled"
+    if gb.is_on("sample-feature-state"):
+        feature = "Feature is enabled!"
+    return {
+        "message": "Welcome to the API",
+        "environment": settings.ENVIRONMENT,
+        "feature": feature
+    }
+
+@app.get("/hello")
+async def hello():
+    return {"message": "Hello World"}
+
 def doSomething(arg: int) -> None:
     print("hello trg_21.11")
 
 def hello_world() -> None:
     print("hello world")
 
-@app.get("/hello")
-async def hello():
-    return {"message": "Hello World"}
+
 
 async def start_server(port: int = 8000):
     config = Config()

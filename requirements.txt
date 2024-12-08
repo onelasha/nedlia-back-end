@@ -4,6 +4,8 @@ flake8
 hypercorn
 fastapi
 uvloop
-httpx>=0.25.2
-pytest-asyncio>=0.23.2
-pytest-cov>=6.0.0
+httpx
+pytest-asyncio
+pytest-cov
+pydantic-settings
+growthbook
