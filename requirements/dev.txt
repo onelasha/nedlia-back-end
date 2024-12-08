@@ -1,0 +1,7 @@
+-r base.txt
+
+# Development dependencies
+pytest
+pytest-asyncio
+pytest-cov
+pre-commit
