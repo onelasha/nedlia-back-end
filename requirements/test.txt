@@ -1,0 +1,6 @@
+-r base.txt
+
+# Testing dependencies
+pytest
+pytest-asyncio
+pytest-cov

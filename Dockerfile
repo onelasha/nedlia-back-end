@@ -2,30 +2,32 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy requirements first for better cache usage
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first for better caching
+COPY requirements/ requirements/
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy only necessary application files
-COPY main.py .
-COPY config.py .
-COPY utils/ utils/
-COPY constants/ constants/
-COPY sonar-project.properties .
-COPY pytest.ini .
-COPY README.md .
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements/prod.txt
 
-# Use non-root user for security
-RUN useradd -m myuser
-USER myuser
+# Copy application code
+COPY app/ app/
+COPY scripts/ scripts/
 
-# Environment variables with defaults
+# Copy environment files
+COPY .env.* ./
+
+# Set environment variables
+ENV PYTHONPATH=/app
 ENV ENVIRONMENT=production
-ENV GROWTHBOOK_API_HOST=https://cdn.growthbook.io
-# GROWTHBOOK_CLIENT_KEY should be provided at runtime
 
-# Expose the port
+# Expose port
 EXPOSE 8000
 
-# Command to run the application
-CMD ["hypercorn", "main:app", "--bind", "0.0.0.0:8000", "--workers", "4", "--access-logfile", "-", "--worker-class", "uvloop"]
+# Run the application
+CMD ["python", "-m", "app.main"]
