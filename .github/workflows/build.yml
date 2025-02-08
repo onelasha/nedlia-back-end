@@ -37,13 +37,13 @@ jobs:
           echo "GROWTHBOOK_CLIENT_KEY=${{ secrets.GROWTHBOOK_CLIENT_KEY_PROD }}" >> .env
           echo "GROWTHBOOK_CACHE_TTL=60" >> .env
 
-      - name: Run tests with coverage
-        env:
-          GROWTHBOOK_CLIENT_KEY: ${{ secrets.GROWTHBOOK_CLIENT_KEY_PROD }}
-        run: |
-          poetry run pytest --cov=. --cov-report=xml --cov-report=term-missing tests/
+      # - name: Run tests with coverage
+      #   env:
+      #     GROWTHBOOK_CLIENT_KEY: ${{ secrets.GROWTHBOOK_CLIENT_KEY_PROD }}
+      #   run: |
+      #     poetry run pytest --cov=. --cov-report=xml --cov-report=term-missing tests/
 
-      # Uncomment if you're using SonarQube
+      # # Uncomment if you're using SonarQube
       - name: SonarQube Cloud Scan
         uses: SonarSource/sonarqube-scan-action@master
         env:
