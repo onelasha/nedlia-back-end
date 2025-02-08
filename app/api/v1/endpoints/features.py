@@ -3,6 +3,7 @@ Feature flag endpoints.
 """
 
 from fastapi import APIRouter, HTTPException
+
 from app.services.feature_service import get_feature_service
 
 router = APIRouter()
@@ -17,7 +18,7 @@ async def refresh_features():
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Failed to refresh features: {str(e)}"
-        )
+        ) from e
 
 
 @router.get("/status/{feature_key}")

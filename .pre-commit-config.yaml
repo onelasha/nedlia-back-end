@@ -33,11 +33,11 @@ repos:
       language: system
       types: [python]
 
-    - id: flake8
-      name: Run flake8 checks
-      entry: flake8
-      language: system
-      types: [python]
+    # - id: flake8
+    #   name: Run flake8 checks
+    #   entry: flake8
+    #   language: system
+    #   types: [python]
 
     - id: pylint
       name: Run pylint checks

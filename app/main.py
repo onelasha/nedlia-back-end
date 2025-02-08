@@ -3,13 +3,14 @@ Main application entry point.
 """
 
 import asyncio
-from fastapi import FastAPI
-from hypercorn.config import Config
-from hypercorn.asyncio import serve
 
-from app.core.events import lifespan
-from app.core.config import get_settings
+from fastapi import FastAPI
+from hypercorn.asyncio import serve
+from hypercorn.config import Config
+
 from app.api.v1.router import router as v1_router
+from app.core.config import get_settings
+from app.core.events import lifespan
 
 # Create FastAPI application
 app = FastAPI(
@@ -49,7 +50,7 @@ def run_server(port: int = 8000, *, loop=None):
         shutdown_event, server_task = loop.run_until_complete(start_server(port))
         loop.run_forever()
     except Exception as e:
-        raise RuntimeError(f"Failed to start server: {str(e)}")
+        raise RuntimeError(f"Failed to start server: {str(e)}") from e
     finally:
         if shutdown_event:
             shutdown_event.set()

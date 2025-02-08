@@ -4,6 +4,7 @@ Core configuration for the application.
 
 from enum import Enum
 from functools import lru_cache
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 

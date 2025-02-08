@@ -3,7 +3,9 @@ Feature flag service using GrowthBook.
 """
 
 from functools import lru_cache
+
 from growthbook import GrowthBook
+
 from app.core.config import get_settings
 
 
