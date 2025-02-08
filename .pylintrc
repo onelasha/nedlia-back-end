@@ -94,6 +94,10 @@ max-parents=7
 # List of method names used to declare (i.e. assign) instance attributes
 defining-attr-methods=__init__,__new__,setUp
 
-[EXCEPTIONS]
-# Exceptions that will emit a warning when caught
-overgeneral-exceptions=Exception
+; [EXCEPTIONS]
+; # Exceptions that will emit a warning when caught
+; overgeneral-exceptions=BaseException,
+;   Exception,
+;   ArithmeticError,
+;   LookupError,
+;   StandardError

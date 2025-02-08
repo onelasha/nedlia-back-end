@@ -47,7 +47,7 @@ repos:
 
     - id: pytest-cov
       name: Run pytest with coverage
-      entry: env PYTHONPATH=./src:./tests python -m pytest --cov --cov-report=html --cov-fail-under=25
+      entry: env PYTHONPATH=./src:./tests python -m pytest --cov --cov-report=html --cov-fail-under=80
       language: system
       pass_filenames: false
       types: [ python ]
