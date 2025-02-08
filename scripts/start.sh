@@ -19,3 +19,6 @@ fi
 # Start the application
 echo "Starting application in $ENV mode..."
 python -m app
+
+# adding alias for python -m app
+
