@@ -17,33 +17,31 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.13
+          python-version: "3.13"
 
-      # - name: Install dependencies
-      #   run: |
-      #     python -m pip install --upgrade pip
-      #     pip install poetry
-      #     poetry install
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
 
       - name: Create .env file
         run: |
-          echo "APP_NAME=Nedlia API" >> .env
+          touch .env
+          echo "APP_NAME=Nedlia Backend" >> .env
           echo "APP_VERSION=1.0.0" >> .env
-          echo "DEBUG=False" >> .env
-          echo "ENVIRONMENT=testing" >> .env
-          echo "HOST=127.0.0.1" >> .env
-          echo "PORT=8080" >> .env
+          echo "PORT=8000" >> .env
           echo "GROWTHBOOK_API_HOST=${{ secrets.GROWTHBOOK_API_HOST }}" >> .env
           echo "GROWTHBOOK_CLIENT_KEY=${{ secrets.GROWTHBOOK_CLIENT_KEY_PROD }}" >> .env
           echo "GROWTHBOOK_CACHE_TTL=60" >> .env
 
-      # - name: Run tests with coverage
-      #   env:
-      #     GROWTHBOOK_CLIENT_KEY: ${{ secrets.GROWTHBOOK_CLIENT_KEY_PROD }}
-      #   run: |
-      #     poetry run pytest --cov=. --cov-report=xml --cov-report=term-missing tests/
+      - name: Run tests with coverage
+        env:
+          GROWTHBOOK_CLIENT_KEY: ${{ secrets.GROWTHBOOK_CLIENT_KEY_PROD }}
+        run: |
+          poetry run pytest --cov=. --cov-report=xml --cov-report=term-missing tests/
 
-      # # Uncomment if you're using SonarQube
+      # Uncomment if you're using SonarQube
       - name: SonarQube Cloud Scan
         uses: SonarSource/sonarqube-scan-action@master
         env:
