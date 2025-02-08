@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "nedlia-back-end"
+version = "1.0.0"
+description = "Nedlia Backend API"
+authors = ["Lavrenti DeLavrenti <one.lasha@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.13"
+fastapi = "^0.108.0"
+hypercorn = "^0.15.0"
+pydantic-settings = "^2.1.0"
+httpx = "^0.25.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+pytest-asyncio = "^0.23.2"
+pytest-cov = "^4.1.0"
+pylint = "^3.0.3"
+flake8 = "^6.1.0"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "--cov=. --cov-report=xml --cov-report=term-missing"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ["py313"]
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
