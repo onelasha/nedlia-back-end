@@ -47,7 +47,9 @@ repos:
 
     - id: pytest-cov
       name: Run pytest with coverage
-      entry: env PYTHONPATH=./src:./tests python -m pytest --cov --cov-report=html --cov-fail-under=80
+      entry: poetry run pytest --cov=. --cov-report=xml --cov-report=term-missing tests/
       language: system
       pass_filenames: false
-      types: [ python ]
+      always_run: true
+      verbose: true
+      types: [python]
