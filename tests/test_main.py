@@ -1,18 +1,14 @@
 """
 Tests for main.py
-Tests for main.py
 """
 
 from io import StringIO
-from unittest import TestCase
 from unittest import TestCase
 from unittest.mock import patch
 
 from app.main import main
 
 
-class TestMain(TestCase):
-    """Test cases for main.py"""
 class TestMain(TestCase):
     """Test cases for main.py"""
 
