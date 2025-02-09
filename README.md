@@ -79,3 +79,6 @@ pytest --cov=app --cov-report=html
 
 After running tests with coverage, you can find the HTML report in the `htmlcov` directory.
 Open `htmlcov/index.html` in your browser to view the detailed coverage report.
+
+New features
+============
