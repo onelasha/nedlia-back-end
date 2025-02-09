@@ -6,7 +6,7 @@ from io import StringIO
 from unittest import TestCase
 from unittest.mock import patch
 
-from app.main import main
+from app.main import main as mainFunction
 
 
 class TestMain(TestCase):
@@ -15,9 +15,9 @@ class TestMain(TestCase):
     @patch("sys.stdout", new_callable=StringIO)
     def test_main_prints_startup_message(self, mock_stdout):
         """Test that main() prints the startup message"""
-        main()
+        mainFunction()
         self.assertEqual(mock_stdout.getvalue().strip(), "Application started")
 
     def test_main_execution(self):
         """Test that main() executes without errors"""
-        main()
+        mainFunction()
