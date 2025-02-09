@@ -1,22 +1,28 @@
 """
-Test module for main.py
+Tests for __main__.py
 """
 
-import io
-import runpy
-from contextlib import redirect_stdout
+import unittest
+from io import StringIO
+from unittest.mock import patch
+
+from app.__main__ import main as main_import
+from app.main import main
 
 
-def test_main_output():
-    """Test that main.py prints 'Help' to stdout"""
-    # Capture stdout
-    f = io.StringIO()
-    with redirect_stdout(f):
-        # Execute main module
-        runpy.run_module("main", run_name="__main__")
+class TestMain(unittest.TestCase):
+    """Test the main function"""
 
-    # Get the output
-    output = f.getvalue().strip()
+    @patch("sys.stdout", new_callable=StringIO)
+    def test_main_function(self, mock_stdout):
+        """Test that main function prints the expected output"""
+        main()
+        self.assertEqual(mock_stdout.getvalue().strip(), "Application started")
 
-    # Assert the output is correct
-    assert output == "Help"
+    def test_main_import(self):
+        """Test that main function is properly imported"""
+        self.assertEqual(main_import, main)
+
+
+if __name__ == "__main__":
+    unittest.main()
