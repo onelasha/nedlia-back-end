@@ -3,6 +3,7 @@ source = .
 omit =
     tests/*
     */__init__.py
+    */__main__.py
     setup.py
     */site-packages/*
     .venv/*
@@ -26,4 +27,3 @@ exclude_lines =
     pass
     raise ImportError
     except ImportError:
-    def main
