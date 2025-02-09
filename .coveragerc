@@ -3,7 +3,7 @@ source = .
 omit =
     tests/*
     */__init__.py
-    # */__main__.py
+    */__main__.py
     setup.py
     */site-packages/*
     .venv/*
