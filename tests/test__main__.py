@@ -16,8 +16,6 @@ class TestMain(TestCase):
         mainFunction()
         self.assertEqual(mock_stdout.getvalue().strip(), "Application started")
 
-    @patch("sys.stdout", new_callable=StringIO)
-    def test_main_execution(self, mock_stdout):
+    def test_main_execution(self):
         """Test that main() executes without errors"""
         mainFunction()
-        self.assertEqual(mock_stdout.getvalue().strip(), "Application started")
