@@ -2,22 +2,22 @@
 Tests for main.py
 """
 
-from io import StringIO
-from unittest import TestCase
-from unittest.mock import patch
+from fastapi.testclient import TestClient
 
-from app.main import main
+from app.main import app
+
+client = TestClient(app)
 
 
-class TestMain(TestCase):
-    """Test cases for main.py"""
+def test_root_endpoint():
+    """Test the root endpoint returns the correct welcome message"""
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json() == {"message": "Welcome to Nedlia Backend API"}
 
-    @patch("sys.stdout", new_callable=StringIO)
-    def test_main_prints_startup_message(self, mock_stdout):
-        """Test that main() prints the startup message"""
-        main()
-        self.assertEqual(mock_stdout.getvalue().strip(), "Application started")
 
-    def test_main_execution(self):
-        """Test that main() executes without errors"""
-        main()
+def test_health_check_endpoint():
+    """Test that health check endpoint returns healthy status"""
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json() == {"status": "healthy"}
