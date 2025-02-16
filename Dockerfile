@@ -46,7 +46,6 @@ USER appuser
 
 # Copy application code with read-only permissions
 COPY app/ app/
-RUN chmod -R 444 /app/app
 
 # Set environment variables
 ENV PYTHONPATH=/app \
