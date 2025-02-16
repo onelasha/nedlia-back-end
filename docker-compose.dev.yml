@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+      - FORCE_COLOR=1
+      - HYPERCORN_WORKER_CLASS=asyncio
+      - HYPERCORN_WORKERS=1  # Single worker for development
+      - HYPERCORN_BIND=0.0.0.0:8000
+      - HYPERCORN_ACCESS_LOG=-
+      - HYPERCORN_ERROR_LOG=-
+      - HYPERCORN_LOG_LEVEL=DEBUG
+      # Development environment variables
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=nedlia_dev
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+    command: [
+      "hypercorn", "app.main:app",
+      "--bind", "0.0.0.0:8000",
+      "--reload",  # Enable auto-reload
+      "--worker-class", "asyncio",
+      "--access-logformat", "%(h)s %(r)s %(s)s %(b)s %(D)s",
+      "--access-logfile", "-",
+      "--error-logfile", "-",
+      "--log-level", "DEBUG"
+    ]
+    depends_on:
+      - db
+    networks:
+      - nedlia-network
+    volumes:
+      - .:/app:cached  # Mount entire project for development
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=nedlia_dev
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    networks:
+      - nedlia-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  nedlia-network:
+    driver: bridge
+
+volumes:
+  postgres_dev_data:
