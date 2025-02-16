@@ -5,6 +5,7 @@ FastAPI application main module
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.v1.api import api_router
 from app.core.config import settings
 from app.infrastructure.database.connection import DatabaseClient
 
@@ -37,27 +38,16 @@ async def shutdown_db_client():
     await DatabaseClient.close_db()
 
 
-@app.get(f"{settings.API_V1_STR}/")
-async def root():
-    """Root endpoint"""
-    return {
-        "message": f"Welcome to {settings.PROJECT_NAME}",
-        "version": settings.VERSION,
-        "docs_url": f"{settings.API_V1_STR}/docs",
-    }
-
-
-@app.get(f"{settings.API_V1_STR}/health")
-async def health_check():
-    """Health check endpoint"""
-    return {"status": "healthy"}
+# Include API router
+app.include_router(api_router, prefix=settings.API_V1_STR)
 
 
 if __name__ == "__main__":
     import asyncio
 
-    import hypercorn.asyncio
+    from hypercorn.asyncio import serve
+    from hypercorn.config import Config
 
-    config = hypercorn.Config()
+    config = Config()
     config.bind = ["0.0.0.0:8000"]
-    asyncio.run(hypercorn.asyncio.serve(app, config))
+    asyncio.run(serve(app, config))
