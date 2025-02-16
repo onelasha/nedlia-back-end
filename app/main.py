@@ -1,5 +1,5 @@
 """
-FastAPI application main module
+Main application module
 """
 
 from contextlib import asynccontextmanager
@@ -8,50 +8,47 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.api import api_router
-from app.core.config import settings
-from app.infrastructure.database.connection import DatabaseClient
+from app.core.config import get_settings
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     """
-    Handle application startup and shutdown events.
-    The FastAPI app parameter is not used but required by the framework.
+    Handle startup and shutdown events
     """
-    # Startup
-    await DatabaseClient.connect_db()
     yield
-    # Shutdown
-    await DatabaseClient.close_db()
 
 
-app = FastAPI(
-    title=settings.PROJECT_NAME,
-    description="Nedlia Backend API with Clean Architecture",
-    version=settings.VERSION,
-    openapi_url=f"{settings.API_V1_STR}/openapi.json",
-    lifespan=lifespan,
-)
+def create_application() -> FastAPI:
+    """Create FastAPI application"""
+    settings = get_settings()
 
-# Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific origins
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+    application = FastAPI(
+        title=settings.PROJECT_NAME,
+        openapi_url=f"{settings.API_V1_STR}/openapi.json",
+        docs_url=f"{settings.API_V1_STR}/docs",
+        redoc_url=f"{settings.API_V1_STR}/redoc",
+        lifespan=lifespan,
+    )
 
-# Include API router
-app.include_router(api_router, prefix=settings.API_V1_STR)
+    # Set CORS middleware
+    application.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
+    # Include API router
+    application.include_router(api_router, prefix=settings.API_V1_STR)
+
+    return application
+
+
+app = create_application()
 
 if __name__ == "__main__":
-    import asyncio
+    import uvicorn
 
-    from hypercorn.asyncio import serve
-    from hypercorn.config import Config
-
-    config = Config()
-    config.bind = ["0.0.0.0:8000"]
-    asyncio.run(serve(app, config))
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

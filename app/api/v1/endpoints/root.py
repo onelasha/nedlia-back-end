@@ -4,7 +4,7 @@ Root endpoint
 
 from fastapi import APIRouter
 
-from app.core.config import settings
+from app.core.config import get_settings
 
 router = APIRouter()
 
@@ -12,8 +12,5 @@ router = APIRouter()
 @router.get("/")
 async def root():
     """Root endpoint"""
-    return {
-        "message": f"Welcome to {settings.PROJECT_NAME}",
-        "version": settings.VERSION,
-        "docs_url": f"{settings.API_V1_STR}/docs",
-    }
+    settings = get_settings()
+    return {"name": settings.PROJECT_NAME, "message": "Welcome to Nedlia Backend API"}
