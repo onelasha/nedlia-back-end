@@ -46,7 +46,7 @@ WORKDIR /app
 USER appuser
 
 # Copy application code with read-only permissions
-COPY --chown=appuser:appuser app/ app/
+COPY app/ app/
 RUN chmod -R 444 /app/app
 
 # Set environment variables
