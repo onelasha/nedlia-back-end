@@ -45,8 +45,9 @@ RUN useradd --create-home appuser
 WORKDIR /app
 USER appuser
 
-# Copy application code
+# Copy application code with read-only permissions
 COPY --chown=appuser:appuser app/ app/
+RUN chmod -R 444 /app/app
 
 # Set environment variables
 ENV PYTHONPATH=/app \
