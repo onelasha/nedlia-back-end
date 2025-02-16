@@ -1,19 +1,16 @@
 """
-Health check endpoints
+Health check endpoint
 """
 
 from fastapi import APIRouter
 
-from app.core.config import settings
+from app.core.config import get_settings
 
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("")
 async def health_check():
     """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "version": settings.VERSION,
-        "environment": "development" if settings.DEBUG else "production",
-    }
+    settings = get_settings()
+    return {"name": settings.PROJECT_NAME, "status": "healthy"}

@@ -1,63 +1,54 @@
 """
-FastAPI application main module
+Main application module
 """
+
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.config import settings
-from app.infrastructure.database.connection import DatabaseClient
-
-app = FastAPI(
-    title=settings.PROJECT_NAME,
-    description="Nedlia Backend API with Clean Architecture",
-    version=settings.VERSION,
-    openapi_url=f"{settings.API_V1_STR}/openapi.json",
-)
-
-# Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific origins
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+from app.api.v1.api import api_router
+from app.core.config import get_settings
 
 
-@app.on_event("startup")
-async def startup_db_client():
-    """Initialize database connection"""
-    await DatabaseClient.connect_db()
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    """
+    Handle startup and shutdown events
+    """
+    yield
 
 
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    """Close database connection"""
-    await DatabaseClient.close_db()
+def create_application() -> FastAPI:
+    """Create FastAPI application"""
+    settings = get_settings()
+
+    application = FastAPI(
+        title=settings.PROJECT_NAME,
+        openapi_url=f"{settings.API_V1_STR}/openapi.json",
+        docs_url=f"{settings.API_V1_STR}/docs",
+        redoc_url=f"{settings.API_V1_STR}/redoc",
+        lifespan=lifespan,
+    )
+
+    # Set CORS middleware
+    application.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    # Include API router
+    application.include_router(api_router, prefix=settings.API_V1_STR)
+
+    return application
 
 
-@app.get(f"{settings.API_V1_STR}/")
-async def root():
-    """Root endpoint"""
-    return {
-        "message": f"Welcome to {settings.PROJECT_NAME}",
-        "version": settings.VERSION,
-        "docs_url": f"{settings.API_V1_STR}/docs",
-    }
-
-
-@app.get(f"{settings.API_V1_STR}/health")
-async def health_check():
-    """Health check endpoint"""
-    return {"status": "healthy"}
-
+app = create_application()
 
 if __name__ == "__main__":
-    import asyncio
+    import uvicorn
 
-    import hypercorn.asyncio
-
-    config = hypercorn.Config()
-    config.bind = ["0.0.0.0:8000"]
-    asyncio.run(hypercorn.asyncio.serve(app, config))
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
