@@ -1,10 +1,10 @@
 [tool.poetry]
 name = "nedlia-back-end"
 version = "1.0.0"
-description = "Nedlia Backend API"
+description = "Nedlia Backend API with Clean Architecture"
 authors = ["Lavrenti DeLavrenti <one.lasha@gmail.com>"]
 readme = "README.md"
-package-mode = false
+packages = [{include = "app"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -12,6 +12,11 @@ fastapi = "^0.108.0"
 hypercorn = "^0.15.0"
 pydantic-settings = "^2.1.0"
 httpx = "^0.25.2"
+motor = "^3.3.2"
+pymongo = "^4.6.1"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-multipart = "^0.0.7"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
@@ -19,16 +24,18 @@ pytest-asyncio = "^0.23.2"
 pytest-cov = "^4.1.0"
 pylint = "^3.0.3"
 flake8 = "^6.1.0"
+black = "^24.1.1"
+isort = "^5.13.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-addopts = "--cov=. --cov-report=xml --cov-report=term-missing"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+addopts = "--cov=app --cov-report=xml --cov-report=term-missing"
 
 [tool.black]
 line-length = 88
