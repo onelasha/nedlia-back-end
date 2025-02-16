@@ -5,7 +5,15 @@ FastAPI application main module
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="Nedlia Backend", description="Nedlia Backend API", version="1.0.0")
+from app.core.config import settings
+from app.infrastructure.database.connection import DatabaseClient
+
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    description="Nedlia Backend API with Clean Architecture",
+    version=settings.VERSION,
+    openapi_url=f"{settings.API_V1_STR}/openapi.json",
+)
 
 # Configure CORS
 app.add_middleware(
@@ -17,13 +25,29 @@ app.add_middleware(
 )
 
 
-@app.get("/")
+@app.on_event("startup")
+async def startup_db_client():
+    """Initialize database connection"""
+    await DatabaseClient.connect_db()
+
+
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    """Close database connection"""
+    await DatabaseClient.close_db()
+
+
+@app.get(f"{settings.API_V1_STR}/")
 async def root():
     """Root endpoint"""
-    return {"message": "Welcome to Nedlia Backend API"}
+    return {
+        "message": f"Welcome to {settings.PROJECT_NAME}",
+        "version": settings.VERSION,
+        "docs_url": f"{settings.API_V1_STR}/docs",
+    }
 
 
-@app.get("/health")
+@app.get(f"{settings.API_V1_STR}/health")
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy"}
