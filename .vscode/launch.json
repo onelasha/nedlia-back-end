@@ -2,7 +2,37 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "FastAPI: Debug Server",
+            "name": "FastAPI: Hypercorn",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "hypercorn",
+            "args": [
+                "app.main:app",
+                "--reload",
+                "--bind",
+                "0.0.0.0:8000",
+                "--log-level",
+                "DEBUG",
+                "--access-logformat",
+                "%(h)s %(r)s %(s)s %(b)s %(D)s",
+                "--error-logfile",
+                "-",
+                "--access-logfile",
+                "-",
+                "--debug"
+            ],
+            "jinja": true,
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "HYPERCORN_WORKER_CLASS": "asyncio",
+                "FORCE_COLOR": "1",
+                "PYTHONUNBUFFERED": "1"
+            },
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "FastAPI: Uvicorn",
             "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
@@ -12,12 +42,20 @@
                 "--host",
                 "0.0.0.0",
                 "--port",
-                "8000"
+                "8000",
+                "--log-level",
+                "debug",
+                "--use-colors",
+                "--reload-include",
+                "*.py",
+                "--reload-exclude",
+                "tests/*"
             ],
             "jinja": true,
             "justMyCode": false,
             "env": {
-                "PYTHONPATH": "${workspaceFolder}"
+                "PYTHONPATH": "${workspaceFolder}",
+                "UVICORN_WORKER_CLASS": "uvicorn.workers.UvicornWorker"
             },
             "console": "integratedTerminal"
         },
