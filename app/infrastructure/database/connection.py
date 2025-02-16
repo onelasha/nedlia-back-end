@@ -5,7 +5,7 @@ Database connection module
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.database import Database
 
-# from ...core.config import settings
+from app.core.config import settings
 
 
 class DatabaseClient:
@@ -17,8 +17,7 @@ class DatabaseClient:
     @classmethod
     async def connect_db(cls):
         """Connect to database"""
-        # Replace with your actual MongoDB connection string
-        cls.client = AsyncIOMotorClient("mongodb://localhost:27017")
+        cls.client = AsyncIOMotorClient(settings.MONGODB_URI)
         cls.db = cls.client.nedlia_db
 
     @classmethod
