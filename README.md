@@ -32,9 +32,13 @@ nedlia-back-end/
 
 - Python 3.13+
 - Poetry (Python package manager)
+- Docker (optional, for containerized deployment)
+- Docker Compose (optional, for local development)
 - MongoDB (for data storage)
 
 ## Installation
+
+### Using Poetry (Local Development)
 
 1. Clone the repository:
 ```bash
@@ -66,31 +70,77 @@ GROWTHBOOK_CACHE_TTL=60
 EOL
 ```
 
+### Using Docker (Recommended)
+
+1. Clone the repository:
+```bash
+git clone https://github.com/onelasha/nedlia-back-end.git
+cd nedlia-back-end
+```
+
+2. Start the development environment:
+```bash
+# Development mode with hot reload
+docker compose -f docker-compose.dev.yml up
+
+# Or production mode
+docker compose up
+```
+
 ## Running the Application
 
-### Development Mode
+### Local Development
 
 ```bash
 # Activate the poetry shell
 poetry shell
 
-# Run the application
-poetry run python -m app
+# Run with Hypercorn (recommended)
+poetry run hypercorn app.main:app --reload --bind 0.0.0.0:8000 --log-level DEBUG
 
-# Or use hypercorn directly with auto-reload
-poetry run hypercorn app.main:app --reload --bind 0.0.0.0:8000
+# Or use the VS Code launch configuration
+# Press F5 and select "FastAPI: Hypercorn" or "FastAPI: Uvicorn"
 ```
 
-### Production Mode
+### Docker Development
 
 ```bash
-# Using Docker
-docker build -t nedlia-backend .
-docker run -p 8000:8000 nedlia-backend
+# Start development environment with hot reload
+docker compose -f docker-compose.dev.yml up
 
-# Or using poetry in production mode
-ENVIRONMENT=production poetry run python -m app
+# Clean up when done
+docker compose -f docker-compose.dev.yml down --volumes
 ```
+
+### Production Deployment
+
+```bash
+# Build and run with Docker Compose
+docker compose up -d
+
+# Or build and run manually
+docker build -t nedlia-backend .
+docker run -p 8000:8000 \
+  -e ENVIRONMENT=production \
+  -e DB_HOST=your-db-host \
+  nedlia-backend
+```
+
+## Docker Configuration
+
+The project includes several Docker-related files:
+
+- `Dockerfile`: Multi-stage build for production
+- `docker-compose.yml`: Production orchestration
+- `docker-compose.dev.yml`: Development environment with hot reload
+
+Key features:
+- Multi-stage builds for smaller images
+- Poetry for dependency management
+- Hot reload in development
+- Production-ready Hypercorn configuration
+- Proper security settings
+- Environment variable management
 
 ## Development Tools
 
@@ -99,45 +149,12 @@ The project uses several development tools:
 - **Black**: Code formatting
 - **isort**: Import sorting
 - **Pylint**: Code linting
-- **Flake8**: Style guide enforcement
-- **Pytest**: Testing framework
-
-Run the tools:
-```bash
-# Format code
-poetry run black .
-poetry run isort .
-
-# Lint code
-poetry run pylint app
-poetry run flake8 app
-
-# Run tests
-poetry run pytest
-```
-
-## Testing
-
-```bash
-# Run all tests
-poetry run pytest
-
-# Run tests with coverage report
-poetry run pytest --cov=app
-
-# Generate HTML coverage report
-poetry run pytest --cov=app --cov-report=html
-```
-
-View the coverage report by opening `htmlcov/index.html` in your browser.
+- **Docker**: Containerization
+- **Docker Compose**: Local development orchestration
+- **VS Code**: Integrated development environment with custom launch configurations
 
 ## API Documentation
 
-Once the application is running, you can access:
-- API documentation: http://localhost:8000/docs
-- Alternative API documentation: http://localhost:8000/redoc
-- Health check: http://localhost:8000/v1/health
-
-## License
-
-This project is licensed under the terms of the MIT license.
+When running, visit:
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc

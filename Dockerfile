@@ -1,4 +1,4 @@
-FROM python:3.13-slim as python-base
+FROM python:3.13-slim AS python-base
 
 # Python setup
 ENV PYTHONUNBUFFERED=1 \
@@ -17,7 +17,7 @@ ENV PYTHONUNBUFFERED=1 \
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 # Build dependencies
-FROM python-base as builder-base
+FROM python-base AS builder-base
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
@@ -33,7 +33,7 @@ COPY poetry.lock pyproject.toml ./
 RUN poetry install --no-dev --no-root
 
 # Run stage
-FROM python-base as production
+FROM python-base AS production
 ENV FASTAPI_ENV=production
 
 # Copy virtual env from builder
