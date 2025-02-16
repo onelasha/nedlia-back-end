@@ -20,21 +20,10 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 FROM python-base as builder-base
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    curl \
-    ca-certificates \
-    gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-# Install poetry with secure download and verification
-RUN curl -sSLo install-poetry.py https://install.python-poetry.org && \
-    # Verify the installer using GPG
-    curl -sSLo install-poetry.py.asc https://install.python-poetry.org.asc && \
-    gpg --keyserver hkps://keys.openpgp.org --recv-keys 4AC9F4F7 && \
-    gpg --verify install-poetry.py.asc install-poetry.py && \
-    # Install poetry
-    python3 install-poetry.py && \
-    # Cleanup
-    rm -f install-poetry.py install-poetry.py.asc
+# Install poetry using pip
+RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
 
 # Copy project dependency files
 WORKDIR $PYSETUP_PATH
