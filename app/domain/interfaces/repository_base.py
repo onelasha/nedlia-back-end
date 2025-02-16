@@ -3,12 +3,14 @@ Base repository interface
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import Generic, List, Optional, TypeVar
 
 from app.domain.entities.base import BaseEntity
 
+T = TypeVar("T", bound=BaseEntity)
 
-class IRepository[T: BaseEntity](ABC):
+
+class IRepository(ABC, Generic[T]):
     """Base repository interface"""
 
     @abstractmethod

@@ -2,13 +2,15 @@
 Base service module
 """
 
-from typing import List, Optional
+from typing import Generic, List, Optional, TypeVar
 
 from app.domain.entities.base import BaseEntity
 from app.domain.interfaces.repository_base import IRepository
 
+T = TypeVar("T", bound=BaseEntity)
 
-class BaseService[T: BaseEntity]:
+
+class BaseService(Generic[T]):
     """Base service with common CRUD operations"""
 
     def __init__(self, repository: IRepository[T]):
