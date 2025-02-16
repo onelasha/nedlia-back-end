@@ -1,7 +1,8 @@
 """
-Core configuration module
+Application settings module
 """
 
+from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
 
@@ -13,11 +14,7 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     DEBUG: bool = True
 
-    # pylint: disable=too-few-public-methods
-    class Config:
-        """Pydantic config"""
-
-        case_sensitive = True
+    model_config = ConfigDict(case_sensitive=True)
 
 
 settings = Settings()

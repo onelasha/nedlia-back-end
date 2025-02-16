@@ -5,7 +5,7 @@ Base entity module
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class BaseEntity(BaseModel):
@@ -15,8 +15,4 @@ class BaseEntity(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
-    # pylint: disable=too-few-public-methods
-    class Config:
-        """Pydantic config"""
-
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
