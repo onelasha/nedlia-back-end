@@ -112,7 +112,7 @@ class FeatureFlag:
                     "clientVersion": context.client_version,
                 }
             )
-
+            gb.load_features()
             # Evaluate feature
             result = gb.isOn(self.feature_key)
 

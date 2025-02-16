@@ -3,8 +3,9 @@ Application configuration
 """
 
 from functools import lru_cache
+from typing import Optional
 
-from pydantic import ConfigDict
+from pydantic import ConfigDict, Field
 from pydantic_settings import BaseSettings
 
 
@@ -12,27 +13,31 @@ class Settings(BaseSettings):
     """Application settings"""
 
     # API Settings
-    API_V1_STR: str
-    PROJECT_NAME: str
-    DEBUG: bool
+    API_V1_STR: str = "/api/v1"
+    PROJECT_NAME: str = "Nedlia Backend"
+    DEBUG: bool = False
     VERSION: str = "1.0.0"
 
     # GrowthBook
-    GROWTHBOOK_API_HOST: str
-    GROWTHBOOK_CLIENT_KEY: str  # Set this in your environment
-    GROWTHBOOK_CACHE_TTL: int  # Cache features for 60 seconds
+    GROWTHBOOK_API_HOST: str = "https://cdn.growthbook.io"
+    GROWTHBOOK_CLIENT_KEY: str = "test_key"  # Default test key
+    GROWTHBOOK_CACHE_TTL: int = 60  # Cache features for 60 seconds
 
-    # Database
-    DB_HOST: str
-    DB_PORT: int
-    DB_USER: str
-    DB_PASSWORD: str
-    DB_NAME: str
+    # Database - using test defaults
+    DB_HOST: str = "localhost"
+    DB_PORT: int = 5432
+    DB_USER: str = "test_user"
+    DB_PASSWORD: str = "test_password"
+    DB_NAME: str = "test_db"
+
+    # Optional environment indicator
+    ENV: Optional[str] = Field(default="test")
 
     model_config = ConfigDict(
         case_sensitive=True,
         env_file=".env",
         env_file_encoding="utf-8",
+        extra="ignore",  # Allow extra fields
     )
 
 
