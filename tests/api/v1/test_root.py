@@ -4,8 +4,10 @@ Tests for root endpoints
 
 from fastapi.testclient import TestClient
 
+from app.core.config import Settings
 
-def test_root_endpoint(client: TestClient, test_settings):
+
+def test_root_endpoint(client: TestClient, test_settings: Settings) -> None:
     """Test the root endpoint returns the correct welcome message"""
     response = client.get(f"{test_settings.API_V1_STR}/")
     assert response.status_code == 200
