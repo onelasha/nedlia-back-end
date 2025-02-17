@@ -3,6 +3,7 @@ Main application module
 """
 
 from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,7 +13,7 @@ from app.core.config import get_settings
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI):
+async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
     """
     Handle startup and shutdown events
     """
@@ -51,4 +52,13 @@ app = create_application()
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+    # Use localhost by default for security
+    HOST = "127.0.0.1"  # More secure default
+    PORT = 8000
+
+    # Only bind to all interfaces if explicitly set in production
+    _local_settings = get_settings()
+    if not _local_settings.DEBUG and _local_settings.ENV == "production":
+        HOST = "0.0.0.0"  # nosec B104 # Intentional for production deployment
+
+    uvicorn.run("app.main:app", host=HOST, port=PORT, reload=_local_settings.DEBUG)

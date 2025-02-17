@@ -5,8 +5,8 @@ Application configuration
 from functools import lru_cache
 from typing import Optional
 
-from pydantic import ConfigDict, Field
-from pydantic_settings import BaseSettings
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -29,11 +29,12 @@ class Settings(BaseSettings):
     DB_USER: str = "test_user"
     DB_PASSWORD: str = "test_password"
     DB_NAME: str = "test_db"
+    MONGODB_URI: str = "mongodb://localhost:27017"
 
     # Optional environment indicator
     ENV: Optional[str] = Field(default="test")
 
-    model_config = ConfigDict(
+    model_config = SettingsConfigDict(
         case_sensitive=True,
         env_file=".env",
         env_file_encoding="utf-8",

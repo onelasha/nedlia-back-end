@@ -4,6 +4,7 @@ Feature flag implementation using GrowthBook
 
 import logging
 import time
+from typing import Optional
 
 from cachetools import TTLCache
 from fastapi import HTTPException, Request
@@ -22,9 +23,9 @@ logger = logging.getLogger(__name__)
 class FeatureContext(BaseModel):
     """Feature context for evaluation"""
 
-    user_id: str | None = None
+    user_id: Optional[str] = None
     environment: str = "production"
-    client_version: str | None = None
+    client_version: Optional[str] = None
 
 
 def get_growthbook() -> GrowthBook:
@@ -97,8 +98,8 @@ class FeatureFlag:
 
         # Check cache first
         cached = feature_cache.get(cache_key)
-        if cached and time.time() - cached["timestamp"] < 60:
-            return cached["value"]
+        if cached is not None and time.time() - cached["timestamp"] < 60:
+            return bool(cached["value"])
 
         try:
             # Get GrowthBook instance
@@ -122,7 +123,7 @@ class FeatureFlag:
                 "timestamp": int(time.time()),
             }
 
-            return result
+            return bool(result)
         except (ValueError, AttributeError) as e:
             # Log the error and re-raise with more context
             logger.error(

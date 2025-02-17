@@ -1,13 +1,14 @@
 """Test configuration and fixtures"""
 
+from collections.abc import Callable, Generator
+from typing import Any, Dict
 from unittest.mock import patch
 
 import pytest
 from fastapi.testclient import TestClient
 
-from app.api.v1.endpoints.features import get_available_features
 from app.core.config import Settings, get_settings
-from app.core.feature_flags import get_growthbook
+from app.core.feature_flags import FeatureContext, get_growthbook
 from app.main import app
 
 
@@ -31,11 +32,11 @@ def fixture_test_settings() -> Settings:
 class MockGrowthBook:
     """Mock GrowthBook implementation for testing"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize mock GrowthBook"""
-        self.attributes = {}
+        self.attributes: Dict[str, Any] = {}
 
-    def set_attributes(self, attributes: dict) -> None:
+    def set_attributes(self, attributes: Dict[str, Any]) -> None:
         """Set context attributes"""
         self.attributes = attributes
 
@@ -52,13 +53,15 @@ class MockGrowthBook:
         return False
 
     # GrowthBook API compatibility methods
-    def setAttributes(self, attributes: dict) -> None:  # pylint: disable=C0103
-        """GrowthBook API compatibility method"""
-        return self.set_attributes(attributes)
+    # def setAttributes(
+    #     self, attributes: Dict[str, Any]
+    # ) -> None:  # pylint: disable=C0103
+    #     """GrowthBook API compatibility method"""
+    #     return self.set_attributes(attributes)
 
-    def isOn(self, key: str) -> bool:  # pylint: disable=C0103
-        """GrowthBook API compatibility method"""
-        return self.is_on(key)
+    # def isOn(self, key: str) -> bool:  # pylint: disable=C0103
+    #     """GrowthBook API compatibility method"""
+    #     return self.is_on(key)
 
     def load_features(self) -> None:
         """Mock load_features method"""
@@ -71,22 +74,31 @@ def fixture_mock_growthbook() -> MockGrowthBook:
     return MockGrowthBook()
 
 
+def mock_available_features() -> Dict[str, Dict[str, bool]]:
+    """Get mock available features"""
+    return {
+        "test_feature": {
+            "defaultValue": True,
+        }
+    }
+
+
 @pytest.fixture(name="mock_features")
-def fixture_mock_features():
+def fixture_mock_features() -> Callable[[], Dict[str, Dict[str, bool]]]:
     """Create mock feature flags"""
-    return get_available_features
+    return mock_available_features
 
 
 @pytest.fixture(name="client")
 def fixture_client(
     test_settings: Settings,
     mock_growthbook_instance: MockGrowthBook,
-    mock_features,
-) -> TestClient:
+    mock_features: Callable[[], Dict[str, Dict[str, bool]]],
+) -> Generator[TestClient, None, None]:
     """Test client fixture"""
     app.dependency_overrides[get_settings] = lambda: test_settings
     app.dependency_overrides[get_growthbook] = lambda: mock_growthbook_instance
-    app.dependency_overrides[get_available_features] = mock_features
+    app.dependency_overrides[mock_available_features] = mock_features
     with TestClient(app) as test_client:
         with patch(
             "app.core.feature_flags.get_growthbook",
@@ -94,3 +106,13 @@ def fixture_client(
         ):
             yield test_client
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def mock_context() -> FeatureContext:
+    """Test feature context fixture"""
+    return FeatureContext(
+        user_id="test_user",
+        environment="test",
+        client_version="1.0.0",
+    )
