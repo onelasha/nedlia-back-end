@@ -7,12 +7,13 @@ from pydantic_settings import BaseSettings
 class DatabaseSettings(BaseSettings):
     """Database configuration settings."""
     
-    url: PostgresDsn = Field(..., description="PostgreSQL connection URL")
-    pool_size: int = Field(default=5, description="Database connection pool size")
-    max_overflow: int = Field(default=10, description="Maximum overflow connections")
-    pool_timeout: int = Field(default=30, description="Pool timeout in seconds")
-    pool_recycle: int = Field(default=1800, description="Connection recycle time")
-    echo: bool = Field(default=False, description="Echo SQL queries")
+    url: str = Field(..., description="MongoDB connection URL")
+    db_name: str = Field(..., description="Database name")
+    min_pool_size: int = Field(default=5, description="Minimum pool size")
+    max_pool_size: int = Field(default=10, description="Maximum pool size")
+    max_idle_time_ms: int = Field(default=30000, description="Maximum connection idle time")
+    connect_timeout_ms: int = Field(default=20000, description="Connection timeout")
+    server_selection_timeout_ms: int = Field(default=30000, description="Server selection timeout")
 
     class Config:
         env_prefix = "DB_"

@@ -75,10 +75,10 @@ app/
   - Dependency injection
 
 - **Database**
-  - Async SQLAlchemy 2.0
-  - Connection pooling
-  - Alembic migrations
+  - MongoDB 8.0 with Motor and Beanie ODM
+  - Async connection pooling
   - Repository pattern
+  - Document-based data model
 
 - **Observability**
   - Structured JSON logging
@@ -103,9 +103,9 @@ app/
 
 - **Python**: ^3.11
 - **Web Framework**: FastAPI
-- **ORM**: SQLAlchemy 2.0
-- **Database**: PostgreSQL
-- **Migration Tool**: Alembic
+- **Database**: MongoDB 8.0
+- **ODM**: Beanie (Motor/PyMongo)
+- **Caching**: Redis
 - **Dependency Management**: Poetry
 - **Testing**: pytest
 - **Logging**: structlog
@@ -118,7 +118,8 @@ app/
 
 - Python 3.11+
 - Poetry
-- PostgreSQL
+- MongoDB 8.0+
+- Redis (optional)
 - Docker (optional)
 
 ### Installation

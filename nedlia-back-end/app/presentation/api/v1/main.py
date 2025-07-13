@@ -9,6 +9,7 @@ from app.infrastructure.errors.handlers import register_error_handlers
 from app.infrastructure.logging.config import configure_logging
 from app.infrastructure.middleware.logging import RequestLoggingMiddleware
 from app.infrastructure.middleware.metrics import PrometheusMiddleware
+from app.infrastructure.persistence.database import init_mongodb
 from app.presentation.api.v1.routes import router as api_router
 
 def create_application() -> FastAPI:
@@ -52,6 +53,11 @@ def create_application() -> FastAPI:
 
     # Add routes
     app.include_router(api_router, prefix="/api/v1")
+
+    @app.on_event("startup")
+    async def startup_event():
+        """Initialize services on startup."""
+        await init_mongodb()
 
     return app
 

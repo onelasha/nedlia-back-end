@@ -1,26 +1,25 @@
-"""SQLAlchemy user model."""
+"""User database model."""
 
 from datetime import datetime
+from typing import Optional
+from pydantic import EmailStr, Field
 
-from sqlalchemy import Boolean, DateTime, String
-from sqlalchemy.orm import Mapped, mapped_column
+from app.infrastructure.persistence.models.base import BaseDocument
 
-from app.infrastructure.persistence.models.base import Base
-
-class UserModel(Base):
-    """SQLAlchemy model for users."""
-
-    __tablename__ = "users"
-
-    id: Mapped[str] = mapped_column(String(36), primary_key=True)
-    email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
-    hashed_password: Mapped[str] = mapped_column(String(255))
-    phone: Mapped[str] = mapped_column(String(20), nullable=True)
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime, 
-        default=datetime.utcnow, 
-        onupdate=datetime.utcnow
-    )
+class UserModel(BaseDocument):
+    """User database model."""
+    
+    email: EmailStr = Field(..., unique=True, index=True)
+    hashed_password: str
+    phone: Optional[str] = None
+    is_active: bool = Field(default=True)
+    is_verified: bool = Field(default=False)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    
+    class Settings:
+        name = "users"
+        indexes = [
+            "email",
+            "phone"
+        ]
