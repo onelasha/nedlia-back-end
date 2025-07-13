@@ -1,10 +1,36 @@
-# Nedlia Backend API
+# Nedlia User Management Service
 
-A modern, enterprise-grade Python microservice built with FastAPI, MongoDB, and Redis, following Clean Architecture and Domain-Driven Design principles. Designed for high scalability and maintainability in cloud environments.
+A domain-centric microservice responsible for user management and authentication within the Nedlia ecosystem. Built with Python, FastAPI, and MongoDB, following Domain-Driven Design principles and Clean Architecture. This service is part of the Nedlia platform's bounded context for user identity and access management.
 
-## 🏗️ Architecture Overview
+## 🏗️ Domain & Architecture
 
-This project implements Clean Architecture with DDD principles, organizing code into distinct layers:
+### Domain Context
+This microservice operates within the User Management bounded context of the Nedlia platform, responsible for:
+- User identity management
+- Authentication and authorization
+- User profile data
+- Account status and verification
+
+### Domain Model
+- **User Aggregate**
+  - User Entity (root)
+  - Email Value Object
+  - Password Value Object
+  - Phone Value Object
+  - UserStatus Value Object
+
+- **Domain Events**
+  - UserCreated
+  - UserVerified
+  - PasswordChanged
+  - EmailChanged
+
+- **Domain Services**
+  - PasswordHashingService
+  - UserVerificationService
+  - AuthenticationService
+
+### Architecture Layers
 
 ```
 nedlia-back-end/
@@ -35,38 +61,52 @@ nedlia-back-end/
 ```
 
 ### Domain Layer
-- Core business logic and rules
+- Core user management business logic
 - Framework and infrastructure independent
 - Pure Python with minimal external dependencies
 - Components:
-  - **Entities**: Core business objects (e.g., User)
-    - Rich domain model with business methods
-    - Encapsulated validation rules
-    - Immutable where possible
-  - **Value Objects**: Immutable objects (e.g., Email, Password)
-    - Self-validating
-    - Replaceable rather than modifiable
-    - Equality by attributes
-  - **Repository Interfaces**: Data access contracts
-    - Abstract base repository pattern
-    - Technology-agnostic interfaces
-  - **Domain Exceptions**: Business rule violations
-    - Specific exception types per scenario
-    - Rich error context
+  - **User Entity**
+    - Identity and profile management
+    - Password change logic
+    - Email verification rules
+    - Account status management
+  - **Value Objects**
+    - Email (format validation, uniqueness)
+    - Password (strength rules, hashing)
+    - Phone (format, country codes)
+    - UserStatus (state machine)
+  - **Repository Interface**
+    - UserRepository (persistence contract)
+    - UserSearchCriteria (query specs)
+  - **Domain Events**
+    - User lifecycle events
+    - Status change events
+  - **Domain Exceptions**
+    - UserNotFoundError
+    - InvalidPasswordError
+    - EmailAlreadyExistsError
+    - InvalidUserStatusError
 
 ### Application Layer
-- Orchestrates domain objects and business flows
-- Implements specific use cases
-- Thin layer with no business rules
+- User management use cases
+- Authentication flows
+- Profile management
 - Components:
-  - **Services**: Use case implementations
-    - Coordinate domain objects
-    - Transaction management
-    - Event handling
-  - **DTOs**: Data Transfer Objects
-    - Request/Response models
-    - Input validation
-    - Data shape control
+  - **Use Cases**
+    - RegisterUser
+    - AuthenticateUser
+    - UpdateUserProfile
+    - VerifyEmail
+    - ChangePassword
+    - ResetPassword
+  - **DTOs**
+    - UserRegistrationDto
+    - UserProfileDto
+    - AuthenticationDto
+    - PasswordChangeDto
+  - **Event Handlers**
+    - UserCreatedHandler
+    - EmailVerifiedHandler
 
 ### Infrastructure Layer
 - Technical implementations and external integrations
@@ -108,9 +148,29 @@ nedlia-back-end/
     - Dependencies status
   - **API Versioning**: v1 structure
 
-## 🚀 Key Features
+## 🚀 Service Capabilities
 
-### Architecture & Design
+### Core Domain Features
+- **User Management**
+  - Registration and authentication
+  - Profile management
+  - Email verification
+  - Password management
+  - Account status control
+
+- **Security**
+  - JWT-based authentication
+  - Password hashing with bcrypt
+  - Rate limiting per user/IP
+  - Session management
+
+- **Integration**
+  - REST API for other services
+  - Event publishing for changes
+  - Webhook notifications
+  - Health and status checks
+
+### Technical Features
 - **Clean Architecture**
   - Strict separation of concerns
   - Domain-centric design
