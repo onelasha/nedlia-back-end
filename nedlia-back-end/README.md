@@ -141,9 +141,13 @@ cp .env.example .env
 # Edit .env with your configuration
 ```
 
-4. Run database migrations:
+4. Start MongoDB:
 ```bash
-poetry run alembic upgrade head
+# If using Docker
+docker run -d -p 27017:27017 --name mongodb mongo:8.0
+
+# Or if installed locally
+mongod
 ```
 
 5. Start the development server:
