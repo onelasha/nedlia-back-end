@@ -1,173 +1,351 @@
 # Nedlia Backend API
 
-A modern, enterprise-grade Python microservice built with FastAPI, following Clean Architecture and Domain-Driven Design principles.
+A modern, enterprise-grade Python microservice built with FastAPI, MongoDB, and Redis, following Clean Architecture and Domain-Driven Design principles. Designed for high scalability and maintainability in cloud environments.
 
 ## 🏗️ Architecture Overview
 
 This project implements Clean Architecture with DDD principles, organizing code into distinct layers:
 
 ```
-app/
-├── domain/          # Enterprise business rules and entities
-├── application/     # Application-specific business rules
-├── infrastructure/  # External frameworks and tools
-└── presentation/    # Interface adapters (API endpoints)
+nedlia-back-end/
+├── app/
+│   ├── domain/              # Enterprise business rules and entities
+│   │   ├── entities/        # Core business objects
+│   │   ├── value_objects/   # Immutable value objects
+│   │   ├── repositories/    # Abstract repository interfaces
+│   │   └── exceptions/      # Domain-specific exceptions
+│   │
+│   ├── application/         # Application-specific business rules
+│   │   ├── services/        # Business logic orchestration
+│   │   └── dtos/           # Data Transfer Objects
+│   │
+│   ├── infrastructure/      # External frameworks and tools
+│   │   ├── config/         # Application configuration
+│   │   ├── persistence/    # MongoDB implementations
+│   │   ├── logging/        # Logging configuration
+│   │   ├── middleware/     # FastAPI middleware
+│   │   └── errors/         # Error handlers
+│   │
+│   └── presentation/        # Interface adapters
+│       └── api/            # API endpoints and routes
+│
+├── tests/                  # Test suites
+├── pyproject.toml         # Project dependencies
+└── .env.example          # Environment configuration template
 ```
 
-### Domain Layer (Inside)
-- Contains enterprise-wide business rules
-- Pure Python with no external dependencies
-- Includes:
-  - Entities (core business objects)
-  - Value Objects (immutable objects defined by attributes)
-  - Repository Interfaces (data access contracts)
-  - Domain Services (complex business operations)
-  - Domain Events (business occurrences)
-  - Domain Exceptions (business rule violations)
+### Domain Layer
+- Core business logic and rules
+- Framework and infrastructure independent
+- Pure Python with minimal external dependencies
+- Components:
+  - **Entities**: Core business objects (e.g., User)
+    - Rich domain model with business methods
+    - Encapsulated validation rules
+    - Immutable where possible
+  - **Value Objects**: Immutable objects (e.g., Email, Password)
+    - Self-validating
+    - Replaceable rather than modifiable
+    - Equality by attributes
+  - **Repository Interfaces**: Data access contracts
+    - Abstract base repository pattern
+    - Technology-agnostic interfaces
+  - **Domain Exceptions**: Business rule violations
+    - Specific exception types per scenario
+    - Rich error context
 
 ### Application Layer
-- Contains application-specific business rules
-- Orchestrates the flow of data and domain objects
-- Implements use cases
-- Includes:
-  - Services (orchestration of domain objects)
-  - DTOs (data transfer objects)
-  - Interface Adapters
-  - Command/Query handlers
+- Orchestrates domain objects and business flows
+- Implements specific use cases
+- Thin layer with no business rules
+- Components:
+  - **Services**: Use case implementations
+    - Coordinate domain objects
+    - Transaction management
+    - Event handling
+  - **DTOs**: Data Transfer Objects
+    - Request/Response models
+    - Input validation
+    - Data shape control
 
 ### Infrastructure Layer
-- Contains technical capabilities and tools
+- Technical implementations and external integrations
 - Implements interfaces defined in domain layer
-- Includes:
-  - Database implementations
-  - External services integration
-  - Message queues
-  - File systems
-  - Framework configurations
+- Components:
+  - **Persistence**: MongoDB implementation
+    - Beanie ODM models
+    - Repository implementations
+    - Connection management
+  - **Configuration**: Application settings
+    - Environment-based config
+    - Dependency injection setup
+  - **Logging**: Structured logging
+    - JSON format
+    - Correlation IDs
+    - Log levels
+  - **Middleware**: Request processing
+    - Authentication
+    - Request logging
+    - Metrics collection
+  - **Error Handling**: HTTP error responses
+    - Domain exception mapping
+    - Consistent error format
 
 ### Presentation Layer
-- Contains API endpoints and controllers
-- Handles HTTP requests/responses
-- Includes:
-  - REST API routes
-  - Request/Response models
-  - Authentication/Authorization
-  - Input validation
+- API interface and request handling
+- FastAPI routes and endpoints
+- Components:
+  - **API Routes**: Endpoint definitions
+    - Resource-based organization
+    - OpenAPI documentation
+    - Response models
+  - **Middleware**: Request processing
+    - CORS handling
+    - Authentication
+    - Rate limiting
+  - **Health Checks**: System status
+    - Database connectivity
+    - Dependencies status
+  - **API Versioning**: v1 structure
 
 ## 🚀 Key Features
 
+### Architecture & Design
 - **Clean Architecture**
-  - Clear separation of concerns
+  - Strict separation of concerns
   - Domain-centric design
   - Framework independence
-  - Highly testable
+  - High testability
+  - Maintainable codebase
 
 - **Domain-Driven Design**
-  - Rich domain model
-  - Encapsulated business logic
-  - Value objects for immutability
-  - Domain events for decoupling
-
-- **Modern FastAPI Setup**
-  - Async/await support
-  - OpenAPI documentation
-  - Type hints throughout
-  - Dependency injection
-
-- **Database**
-  - MongoDB 8.0 with Motor and Beanie ODM
-  - Async connection pooling
+  - Rich domain models
+  - Bounded contexts
+  - Value objects
   - Repository pattern
-  - Document-based data model
+  - Domain events
 
-- **Observability**
-  - Structured JSON logging
+### Technology Stack
+- **FastAPI Framework**
+  - High performance async
+  - Type hints throughout
+  - OpenAPI/Swagger docs
+  - Dependency injection
+  - Pydantic validation
+
+- **MongoDB 8.0**
+  - Async driver (Motor)
+  - Beanie ODM
+  - Connection pooling
+  - Document-based model
+  - Schemaless flexibility
+
+- **Redis Integration**
+  - Session management
+  - Rate limiting
+  - Cache layer
+  - Pub/Sub capability
+
+### Observability & Monitoring
+- **Logging**
+  - Structured JSON format
   - Request correlation IDs
-  - Prometheus metrics
-  - Health check endpoints
+  - Log levels by environment
+  - Contextual logging
 
-- **Security**
-  - CORS configuration
-  - JWT authentication
+- **Metrics**
+  - Prometheus integration
+  - Request metrics
+  - Business metrics
+  - Custom metrics support
+
+- **Health Checks**
+  - Database connectivity
+  - Redis connectivity
+  - System resources
+  - Dependencies status
+
+### Security
+- **Authentication**
+  - JWT tokens
+  - Refresh tokens
+  - Role-based access
+  - Session management
+
+- **Data Protection**
   - Password hashing
+  - Input validation
+  - CORS policies
   - Rate limiting
 
-- **Developer Experience**
-  - Poetry for dependency management
-  - Type checking with mypy
-  - Code formatting with black
-  - Import sorting with isort
-  - Pre-commit hooks
+### Developer Experience
+- **Dependency Management**
+  - Poetry
+  - Lock file
+  - Virtual environments
+  - Development groups
+
+- **Code Quality**
+  - Type checking (mypy)
+  - Linting (flake8)
+  - Formatting (black)
+  - Import sorting (isort)
+
+- **Testing**
+  - Unit tests
+  - Integration tests
+  - Async test support
+  - Fixtures and factories
 
 ## 🛠️ Technical Stack
 
-- **Python**: ^3.11
-- **Web Framework**: FastAPI
+### Core Technologies
+- **Language**: Python ^3.11
+- **Web Framework**: FastAPI ^0.104.0
+- **ASGI Server**: Uvicorn ^0.23.2
+
+### Data Layer
 - **Database**: MongoDB 8.0
-- **ODM**: Beanie (Motor/PyMongo)
-- **Caching**: Redis
+- **ODM**: Beanie ^1.23.0
+- **Driver**: Motor ^3.3.1
+- **Caching**: Redis ^5.0.1
+
+### Security
+- **Authentication**: python-jose[cryptography]
+- **Password Hashing**: passlib[bcrypt]
+- **Form Parsing**: python-multipart
+
+### Observability
+- **Logging**: structlog ^23.2.0
+- **Metrics**: prometheus-client ^0.17.1
+
+### Development Tools
 - **Dependency Management**: Poetry
+- **Type Checking**: mypy
+- **Linting**: flake8
+- **Formatting**: black
+- **Import Sorting**: isort
 - **Testing**: pytest
-- **Logging**: structlog
-- **Metrics**: Prometheus
 - **Documentation**: OpenAPI/Swagger
 
 ## 🚦 Getting Started
 
 ### Prerequisites
 
-- Python 3.11+
-- Poetry
-- MongoDB 8.0+
-- Redis (optional)
-- Docker (optional)
+#### Required
+- Python 3.11 or higher
+- Poetry package manager
+- MongoDB 8.0 or higher
+- Git
 
-### Installation
+#### Optional
+- Redis 5.0 or higher (for caching)
+- Docker & Docker Compose (for containerization)
+- Make (for development scripts)
 
-1. Clone the repository:
+### Local Development Setup
+
+1. **Clone the Repository**
 ```bash
-git clone https://github.com/your-org/nedlia-back-end.git
+git clone https://github.com/onelasha/nedlia-back-end.git
 cd nedlia-back-end
 ```
 
-2. Install dependencies:
+2. **Install Dependencies**
 ```bash
+# Install Poetry if not already installed
+curl -sSL https://install.python-poetry.org | python3 -
+
+# Install project dependencies
 poetry install
 ```
 
-3. Set up environment variables:
+3. **Configure Environment**
 ```bash
+# Copy environment template
 cp .env.example .env
-# Edit .env with your configuration
+
+# Edit .env with your settings
+# Required variables:
+# - DB_URL: MongoDB connection string
+# - DB_NAME: Database name
+# - SECURITY_SECRET_KEY: JWT secret
 ```
 
-4. Start MongoDB:
+4. **Start Required Services**
 ```bash
-# If using Docker
-docker run -d -p 27017:27017 --name mongodb mongo:8.0
+# Start MongoDB (choose one method)
 
-# Or if installed locally
-mongod
+# Using Docker:
+docker run -d \
+  --name mongodb \
+  -p 27017:27017 \
+  -e MONGO_INITDB_ROOT_USERNAME=admin \
+  -e MONGO_INITDB_ROOT_PASSWORD=secret \
+  mongo:8.0
+
+# Or local installation:
+mongod --dbpath /path/to/data/db
+
+# Start Redis (optional, for caching)
+docker run -d \
+  --name redis \
+  -p 6379:6379 \
+  redis:5.0
 ```
 
-5. Start the development server:
+5. **Start Development Server**
 ```bash
+# Start with hot reload
+poetry run uvicorn app.presentation.api.v1.main:app --reload --host 0.0.0.0 --port 8000
+
+# Or using the development script
 poetry run dev
 ```
 
 ### Docker Deployment
 
-1. Build the image:
+1. **Build Application Image**
 ```bash
-docker build -t nedlia-backend .
+# Build with current architecture
+docker build -t nedlia-backend:latest .
+
+# Or multi-platform build
+docker buildx build --platform linux/amd64,linux/arm64 -t nedlia-backend:latest .
 ```
 
-2. Run the container:
+2. **Run with Docker Compose**
 ```bash
-docker run -d -p 8000:8000 \
-  -e DB_URL=postgresql://user:pass@host/db \
+# Start all services
+docker-compose up -d
+
+# Or run individually
+docker run -d \
+  --name nedlia-api \
+  -p 8000:8000 \
+  -e DB_URL=mongodb://mongodb:27017 \
+  -e DB_NAME=nedlia \
   -e REDIS_URL=redis://redis:6379 \
-  nedlia-backend
+  -e SECURITY_SECRET_KEY=your-secret-key \
+  --network nedlia-network \
+  nedlia-backend:latest
+```
+
+### Verify Installation
+
+1. **Check API Status**
+```bash
+curl http://localhost:8000/api/v1/health
+```
+
+2. **Access Documentation**
+- OpenAPI UI: http://localhost:8000/docs
+- ReDoc UI: http://localhost:8000/redoc
+- OpenAPI JSON: http://localhost:8000/openapi.json
+
+3. **Monitor Metrics**
+```bash
+curl http://localhost:8000/metrics
 ```
 
 ## 🏗️ Project Structure
