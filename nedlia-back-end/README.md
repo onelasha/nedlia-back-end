@@ -1,5 +1,43 @@
 # Nedlia User Profile Service
 
+## Table of Contents
+- [Overview](#overview)
+- [Architecture](#architecture)
+  - [Clean Architecture](#clean-architecture)
+  - [Domain-Driven Design](#domain-driven-design)
+  - [Infrastructure](#infrastructure)
+- [Features](#features)
+  - [Core Features](#core-features)
+  - [Technical Features](#technical-features)
+- [Security & Integration](#security--integration)
+  - [Okta Integration](#okta-integration)
+  - [Profile Sync](#profile-sync)
+  - [Data Protection](#data-protection)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Local Development Setup](#local-development-setup)
+  - [Docker Setup](#docker-setup)
+- [Development](#development)
+  - [Code Style](#code-style)
+  - [Git Workflow](#git-workflow)
+  - [Documentation](#documentation)
+- [Testing](#testing)
+  - [Unit Tests](#unit-tests)
+  - [Integration Tests](#integration-tests)
+  - [E2E Tests](#e2e-tests)
+- [Deployment](#deployment)
+  - [Docker Deployment](#docker-deployment)
+  - [Cloud Deployment](#cloud-deployment)
+- [Monitoring](#monitoring)
+  - [Health Checks](#health-checks)
+  - [Metrics](#metrics)
+  - [Logging](#logging)
+- [Additional Documentation](#additional-documentation)
+  - [API Documentation](#api-documentation)
+  - [Architecture Guide](#architecture-guide)
+  - [Okta Integration Guide](docs/okta-integration.md)
+
+## Overview
 A domain-centric microservice responsible for user profile management within the Nedlia ecosystem, integrated with Okta for identity and access management. Built with Python, FastAPI, and MongoDB, following Domain-Driven Design principles and Clean Architecture. This service is part of the Nedlia platform's bounded context for user profiles and preferences.
 
 ## 🏗️ Domain & Architecture

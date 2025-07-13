@@ -1,9 +1,37 @@
 # Okta Integration Guide
 
+## Table of Contents
+- [Overview](#overview)
+- [Setup Steps](#setup-steps)
+  - [1. Okta Developer Account](#1-okta-developer-account)
+  - [2. Create API Service Application](#2-create-api-service-application)
+  - [3. Configure CORS and Security](#3-configure-cors-and-security)
+  - [4. Profile Schema](#4-profile-schema)
+  - [5. Webhook Setup](#5-webhook-setup)
+- [Integration Points](#integration-points)
+  - [Token Validation](#token-validation)
+  - [Profile Sync](#profile-sync)
+  - [Webhook Handling](#webhook-handling)
+- [Testing](#testing)
+  - [Mock Server](#mock-server)
+  - [Test Environment](#test-environment)
+- [Troubleshooting](#troubleshooting)
+  - [Common Issues](#common-issues)
+  - [Monitoring](#monitoring)
+- [Security Best Practices](#security-best-practices)
+  - [Token Handling](#token-handling)
+  - [API Security](#api-security)
+  - [Data Protection](#data-protection)
+- [Resources](#resources)
+
+[← Back to Main Documentation](../README.md)
+
 ## Overview
 This service integrates with Okta for identity and access management. Okta handles all authentication, while this service manages user profiles and preferences.
 
 ## Setup Steps
+
+[↑ Back to top](#table-of-contents)
 
 ### 1. Okta Developer Account
 1. Sign up at https://developer.okta.com/signup/
@@ -48,6 +76,8 @@ This service integrates with Okta for identity and access management. Okta handl
 
 ## Integration Points
 
+[↑ Back to top](#table-of-contents)
+
 ### 1. Token Validation
 ```python
 from okta.jwt import JWTVerifier
@@ -81,6 +111,8 @@ async def handle_okta_webhook(payload: OktaWebhookPayload):
 
 ## Testing
 
+[↑ Back to top](#table-of-contents)
+
 ### 1. Mock Server
 For development and testing, use the provided Okta mock server:
 ```bash
@@ -98,6 +130,8 @@ OKTA_CLIENT_SECRET="test-client-secret"
 ```
 
 ## Troubleshooting
+
+[↑ Back to top](#table-of-contents)
 
 ### Common Issues
 1. Token Validation Fails
@@ -123,6 +157,8 @@ OKTA_CLIENT_SECRET="test-client-secret"
 
 ## Security Best Practices
 
+[↑ Back to top](#table-of-contents)
+
 1. **Token Handling**
    - Never store tokens in code
    - Use secure environment variables
@@ -139,6 +175,8 @@ OKTA_CLIENT_SECRET="test-client-secret"
    - Regular security audits
 
 ## Resources
+
+[↑ Back to top](#table-of-contents)
 
 - [Okta Developer Documentation](https://developer.okta.com/docs/reference/)
 - [API Services Guide](https://developer.okta.com/docs/guides/implement-oauth-for-okta/overview/)
