@@ -1,34 +1,34 @@
-# Nedlia User Management Service
+# Nedlia User Profile Service
 
-A domain-centric microservice responsible for user management and authentication within the Nedlia ecosystem. Built with Python, FastAPI, and MongoDB, following Domain-Driven Design principles and Clean Architecture. This service is part of the Nedlia platform's bounded context for user identity and access management.
+A domain-centric microservice responsible for user profile management within the Nedlia ecosystem, integrated with Okta for identity and access management. Built with Python, FastAPI, and MongoDB, following Domain-Driven Design principles and Clean Architecture. This service is part of the Nedlia platform's bounded context for user profiles and preferences.
 
 ## 🏗️ Domain & Architecture
 
 ### Domain Context
-This microservice operates within the User Management bounded context of the Nedlia platform, responsible for:
-- User identity management
-- Authentication and authorization
-- User profile data
-- Account status and verification
+This microservice operates within the User Profile bounded context of the Nedlia platform, responsible for:
+- User profile data management
+- User preferences and settings
+- Profile verification and status
+- Integration with Okta identity service
 
 ### Domain Model
-- **User Aggregate**
-  - User Entity (root)
-  - Email Value Object
-  - Password Value Object
-  - Phone Value Object
-  - UserStatus Value Object
+- **User Profile Aggregate**
+  - UserProfile Entity (root)
+  - OktaId Value Object
+  - ProfileStatus Value Object
+  - ContactInfo Value Object
+  - Preferences Value Object
 
 - **Domain Events**
-  - UserCreated
-  - UserVerified
-  - PasswordChanged
-  - EmailChanged
+  - ProfileCreated
+  - ProfileUpdated
+  - PreferencesChanged
+  - ProfileVerified
 
 - **Domain Services**
-  - PasswordHashingService
-  - UserVerificationService
-  - AuthenticationService
+  - OktaIntegrationService
+  - ProfileVerificationService
+  - PreferencesManagementService
 
 ### Architecture Layers
 
@@ -65,48 +65,49 @@ nedlia-back-end/
 - Framework and infrastructure independent
 - Pure Python with minimal external dependencies
 - Components:
-  - **User Entity**
-    - Identity and profile management
-    - Password change logic
-    - Email verification rules
-    - Account status management
+  - **UserProfile Entity**
+    - Profile data management
+    - Okta ID association
+    - Profile verification status
+    - Preferences management
   - **Value Objects**
-    - Email (format validation, uniqueness)
-    - Password (strength rules, hashing)
-    - Phone (format, country codes)
-    - UserStatus (state machine)
+    - OktaId (external identity)
+    - ContactInfo (email, phone)
+    - Preferences (user settings)
+    - ProfileStatus (state machine)
   - **Repository Interface**
-    - UserRepository (persistence contract)
-    - UserSearchCriteria (query specs)
+    - ProfileRepository (persistence contract)
+    - ProfileSearchCriteria (query specs)
   - **Domain Events**
-    - User lifecycle events
-    - Status change events
+    - Profile lifecycle events
+    - Preferences change events
   - **Domain Exceptions**
-    - UserNotFoundError
-    - InvalidPasswordError
-    - EmailAlreadyExistsError
-    - InvalidUserStatusError
+    - ProfileNotFoundError
+    - InvalidProfileDataError
+    - DuplicateProfileError
+    - OktaIntegrationError
 
 ### Application Layer
-- User management use cases
-- Authentication flows
-- Profile management
+- Profile management use cases
+- Okta integration flows
+- Preferences management
 - Components:
   - **Use Cases**
-    - RegisterUser
-    - AuthenticateUser
-    - UpdateUserProfile
-    - VerifyEmail
-    - ChangePassword
-    - ResetPassword
+    - CreateUserProfile
+    - UpdateProfile
+    - ManagePreferences
+    - VerifyProfile
+    - SyncWithOkta
+    - QueryProfiles
   - **DTOs**
-    - UserRegistrationDto
-    - UserProfileDto
-    - AuthenticationDto
-    - PasswordChangeDto
+    - ProfileCreationDto
+    - ProfileUpdateDto
+    - PreferencesDto
+    - OktaUserDto
   - **Event Handlers**
-    - UserCreatedHandler
-    - EmailVerifiedHandler
+    - OktaUserCreatedHandler
+    - ProfileUpdatedHandler
+    - PreferencesChangedHandler
 
 ### Infrastructure Layer
 - Technical implementations and external integrations
@@ -151,22 +152,22 @@ nedlia-back-end/
 ## 🚀 Service Capabilities
 
 ### Core Domain Features
-- **User Management**
-  - Registration and authentication
-  - Profile management
-  - Email verification
-  - Password management
-  - Account status control
+- **Profile Management**
+  - Profile creation and updates
+  - Preferences management
+  - Profile verification
+  - Status tracking
+  - Bulk profile operations
 
-- **Security**
-  - JWT-based authentication
-  - Password hashing with bcrypt
-  - Rate limiting per user/IP
-  - Session management
+- **Okta Integration**
+  - Okta webhook handling
+  - User profile sync
+  - JWT token validation
+  - SSO support
 
 - **Integration**
   - REST API for other services
-  - Event publishing for changes
+  - Event publishing
   - Webhook notifications
   - Health and status checks
 
@@ -271,8 +272,8 @@ nedlia-back-end/
 - **Caching**: Redis ^5.0.1
 
 ### Security
-- **Authentication**: python-jose[cryptography]
-- **Password Hashing**: passlib[bcrypt]
+- **Okta SDK**: okta-sdk-python
+- **JWT Validation**: python-jose[cryptography]
 - **Form Parsing**: python-multipart
 
 ### Observability
