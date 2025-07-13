@@ -1,32 +1,69 @@
-"""User entity implementation."""
+"""User profile entity."""
 
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Optional, Dict, Any
+from pydantic import EmailStr, Field
 
 from app.domain.entities.base import BaseEntity
-from app.domain.exceptions.base import BusinessRuleViolation
-from app.domain.value_objects.common import Email, Password, PhoneNumber
 
 class User(BaseEntity):
-    """User domain entity."""
-
-    def __init__(
-        self,
-        email: Email,
-        password: Password,
-        phone: Optional[PhoneNumber] = None,
-        is_active: bool = True,
-        is_verified: bool = False,
-        entity_id: Optional[str] = None,
-        created_at: Optional[datetime] = None,
-        updated_at: Optional[datetime] = None
-    ) -> None:
-        super().__init__(entity_id, created_at, updated_at)
-        self._email = email
-        self._password = password
-        self._phone = phone
-        self._is_active = is_active
-        self._is_verified = is_verified
+    """User profile entity synchronized with Okta."""
+    
+    # Core fields
+    email: EmailStr
+    first_name: str
+    last_name: str
+    
+    # Okta integration
+    okta_id: str
+    is_active: bool = True
+    last_sync: datetime = Field(default_factory=datetime.utcnow)
+    
+    # Extended profile
+    phone: Optional[str] = None
+    avatar_url: Optional[str] = None
+    locale: str = "en-US"
+    timezone: str = "UTC"
+    
+    # Custom attributes
+    preferences: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+    
+    # Timestamps
+    created_at: datetime
+    updated_at: datetime
+    
+    @property
+    def full_name(self) -> str:
+        """Get user's full name."""
+        return f"{self.first_name} {self.last_name}".strip()
+    
+    def update_from_okta(self, okta_profile: dict) -> None:
+        """Update user profile from Okta data."""
+        self.email = okta_profile.get("email", self.email)
+        self.first_name = okta_profile.get("firstName", self.first_name)
+        self.last_name = okta_profile.get("lastName", self.last_name)
+        self.phone = okta_profile.get("mobilePhone", self.phone)
+        self.locale = okta_profile.get("locale", self.locale)
+        self.timezone = okta_profile.get("timezone", self.timezone)
+        self.last_sync = datetime.utcnow()
+        
+        # Update custom attributes if present
+        custom_attrs = okta_profile.get("customAttributes", {})
+        if custom_attrs:
+            self.metadata.update(custom_attrs)
+    
+    def to_okta_profile(self) -> dict:
+        """Convert to Okta profile format."""
+        return {
+            "email": self.email,
+            "firstName": self.first_name,
+            "lastName": self.last_name,
+            "mobilePhone": self.phone,
+            "locale": self.locale,
+            "timezone": self.timezone,
+            "customAttributes": self.metadata
+        }
 
     @property
     def email(self) -> Email:
