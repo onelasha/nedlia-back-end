@@ -34,6 +34,7 @@
   - [Logging](#logging)
 - [Additional Documentation](#additional-documentation)
   - [Implementation Guide](docs/implementation.md)
+  - [Design Diagrams](docs/design-diagrams.md)
   - [API Documentation](#api-documentation)
   - [Architecture Guide](#architecture-guide)
   - [Okta Integration Guide](docs/okta-integration.md)
