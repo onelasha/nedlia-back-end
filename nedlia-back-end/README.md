@@ -226,18 +226,50 @@ nedlia-back-end/
   - System resources
   - Dependencies status
 
-### Security
-- **Authentication**
-  - JWT tokens
-  - Refresh tokens
-  - Role-based access
-  - Session management
+### 🔐 Security & Integration
 
-- **Data Protection**
-  - Password hashing
-  - Input validation
-  - CORS policies
-  - Rate limiting
+### Okta Integration
+- **Authentication Flow**
+  - Okta handles user authentication
+  - JWT token validation
+  - SSO support
+  - Token refresh handling
+
+### Okta Setup
+1. **Create Okta Application**
+   ```bash
+   # Register your application in Okta Developer Console
+   # 1. Applications > Create App Integration
+   # 2. Select: API Services
+   # 3. Configure settings
+   ```
+
+2. **Configure Okta Settings**
+   ```bash
+   # In your .env file
+   OKTA_ORG_URL="https://{yourOktaDomain}"
+   OKTA_CLIENT_ID="{yourClientId}"
+   OKTA_CLIENT_SECRET="{yourClientSecret}"
+   OKTA_API_TOKEN="{yourApiToken}"
+   OKTA_ISSUER="https://{yourOktaDomain}/oauth2/default"
+   ```
+
+3. **Configure CORS & Redirect URIs**
+   - Add your service URL to Okta's trusted origins
+   - Configure allowed redirect URIs
+   - Set up CORS policies in your service
+
+### Profile Sync
+- **Automatic Sync**
+  - Profile updates from Okta
+  - Custom attribute mapping
+  - Webhook event handling
+
+### Data Protection
+- JWT validation
+- Input validation
+- CORS policies
+- Rate limiting
 
 ### Developer Experience
 - **Dependency Management**
@@ -298,11 +330,21 @@ nedlia-back-end/
 - Poetry package manager
 - MongoDB 8.0 or higher
 - Git
+- Okta Developer Account
 
 #### Optional
 - Redis 5.0 or higher (for caching)
 - Docker & Docker Compose (for containerization)
 - Make (for development scripts)
+
+#### Okta Setup
+1. Create a free Okta Developer Account at https://developer.okta.com/signup/
+2. Create an API Services application in Okta
+3. Note down your:
+   - Okta Domain
+   - Client ID
+   - Client Secret
+   - API Token
 
 ### Local Development Setup
 
@@ -330,7 +372,10 @@ cp .env.example .env
 # Required variables:
 # - DB_URL: MongoDB connection string
 # - DB_NAME: Database name
-# - SECURITY_SECRET_KEY: JWT secret
+# - OKTA_ORG_URL: Your Okta organization URL
+# - OKTA_CLIENT_ID: Your Okta client ID
+# - OKTA_CLIENT_SECRET: Your Okta client secret
+# - OKTA_API_TOKEN: Your Okta API token
 ```
 
 4. **Start Required Services**
@@ -539,20 +584,42 @@ nedlia-back-end/
 
 ## 🧪 Testing
 
+### Configure Test Environment
+1. Create a separate Okta test application
+2. Set up test environment variables:
+```bash
+# .env.test
+OKTA_ORG_URL="https://{yourTestOktaDomain}"
+OKTA_CLIENT_ID="{yourTestClientId}"
+OKTA_CLIENT_SECRET="{yourTestClientSecret}"
+OKTA_API_TOKEN="{yourTestApiToken}"
+```
+
 ### Unit Tests
-- Domain logic testing
-- Service layer testing
-- Mocked dependencies
+```bash
+poetry run pytest tests/unit
+```
 
 ### Integration Tests
-- Repository testing
-- API endpoint testing
-- Database integration
+```bash
+# Tests with Okta integration
+poetry run pytest tests/integration
+```
 
 ### E2E Tests
-- Full application testing
-- API contract testing
-- Performance testing
+```bash
+# Full flow tests including Okta auth
+poetry run pytest tests/e2e
+```
+
+### Mock Okta for Development
+```bash
+# Use the provided Okta mock server
+poetry run okta-mock-server
+
+# Or use environment variable
+OKTA_USE_MOCK=true poetry run dev
+```
 
 ## 📚 Documentation
 
